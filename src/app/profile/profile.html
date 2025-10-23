@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Profile</title>
+</head>
+<body>
+  <div class="profile-container">
+    <!-- Header -->
+    <div class="header">
+      <button class="back-btn" (click)="goBack()">← Back to Dashboard</button>
+      <h1>Student Profile</h1>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div *ngIf="message" class="message" [ngClass]="messageType === 'success' ? 'success-msg' : 'error-msg'">
+      <span class="message-icon">{{ messageType === 'success' ? '✅' : '❌' }}</span>
+      {{ message }}
+      <button class="close-btn" (click)="clearMessage()">×</button>
+    </div>
+
+    <!-- Profile Card -->
+    <div class="profile-card">
+      <!-- Profile Photo Section -->
+      <div class="photo-section">
+        <div class="photo-container">
+          <img *ngIf="student.profilePhoto" [src]="student.profilePhoto" alt="Profile Photo" class="profile-photo">
+          <div *ngIf="!student.profilePhoto" class="default-photo">
+            <span class="photo-icon">👤</span>
+          </div>
+        </div>
+        <div *ngIf="isEditing" class="photo-upload">
+          <input type="file" id="photo" accept="image/*" (change)="onFileSelected($event)">
+          <label for="photo" class="upload-btn">Change Photo</label>
+        </div>
+      </div>
+
+      <!-- Profile Information -->
+      <div class="profile-info">
+        <div class="info-header">
+          <h2>{{ student.fullName }}</h2>
+          <p class="roll-no">{{ student.rollNo }}</p>
+          <div class="action-buttons">
+            <button *ngIf="!isEditing" class="edit-btn" (click)="editProfile()">Edit Profile</button>
+            <button *ngIf="isEditing" class="save-btn" (click)="saveProfile()">Save Changes</button>
+            <button *ngIf="isEditing" class="cancel-btn" (click)="cancelEdit()">Cancel</button>
+          </div>
+        </div>
+
+        <!-- Personal Information -->
+        <div class="info-section">
+          <h3>Personal Information</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <label>Full Name *</label>
+              <input *ngIf="isEditing" type="text" [(ngModel)]="student.fullName" required>
+              <span *ngIf="!isEditing">{{ student.fullName }}</span>
+            </div>
+            <div class="info-item">
+              <label>Roll Number</label>
+              <span>{{ student.rollNo }}</span>
+            </div>
+            <div class="info-item">
+              <label>Email *</label>
+              <input *ngIf="isEditing" type="email" [(ngModel)]="student.email" required>
+              <span *ngIf="!isEditing">{{ student.email }}</span>
+            </div>
+            <div class="info-item">
+              <label>Phone *</label>
+              <input *ngIf="isEditing" type="tel" [(ngModel)]="student.phone" required>
+              <span *ngIf="!isEditing">{{ student.phone }}</span>
+            </div>
+            <div class="info-item">
+              <label>Date of Birth</label>
+              <input *ngIf="isEditing" type="date" [(ngModel)]="student.dob">
+              <span *ngIf="!isEditing">{{ student.dob }}</span>
+            </div>
+            <div class="info-item">
+              <label>Gender</label>
+              <select *ngIf="isEditing" [(ngModel)]="student.gender">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+              <span *ngIf="!isEditing">{{ student.gender }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Academic Information -->
+        <div class="info-section">
+          <h3>Academic Information</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <label>Program</label>
+              <input *ngIf="isEditing" type="text" [(ngModel)]="student.program">
+              <span *ngIf="!isEditing">{{ student.program }}</span>
+            </div>
+            <div class="info-item">
+              <label>Department</label>
+              <input *ngIf="isEditing" type="text" [(ngModel)]="student.department">
+              <span *ngIf="!isEditing">{{ student.department }}</span>
+            </div>
+            <div class="info-item">
+              <label>Year</label>
+              <select *ngIf="isEditing" [(ngModel)]="student.year">
+                <option value="1">1st Year</option>
+                <option value="2">2nd Year</option>
+                <option value="3">3rd Year</option>
+                <option value="4">4th Year</option>
+              </select>
+              <span *ngIf="!isEditing">{{ student.year }}th Year</span>
+            </div>
+            <div class="info-item">
+              <label>Semester</label>
+              <select *ngIf="isEditing" [(ngModel)]="student.semester">
+                <option value="1">1st Semester</option>
+                <option value="2">2nd Semester</option>
+                <option value="3">3rd Semester</option>
+                <option value="4">4th Semester</option>
+                <option value="5">5th Semester</option>
+                <option value="6">6th Semester</option>
+                <option value="7">7th Semester</option>
+                <option value="8">8th Semester</option>
+              </select>
+              <span *ngIf="!isEditing">{{ student.semester }}th Semester</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="info-section">
+          <h3>Contact Information</h3>
+          <div class="info-grid">
+            <div class="info-item full-width">
+              <label>Address</label>
+              <textarea *ngIf="isEditing" [(ngModel)]="student.address" rows="3"></textarea>
+              <span *ngIf="!isEditing">{{ student.address }}</span>
+            </div>
+            <div class="info-item">
+              <label>Guardian Name</label>
+              <input *ngIf="isEditing" type="text" [(ngModel)]="student.guardian">
+              <span *ngIf="!isEditing">{{ student.guardian }}</span>
+            </div>
+            <div class="info-item">
+              <label>Emergency Contact</label>
+              <input *ngIf="isEditing" type="tel" [(ngModel)]="student.emergencyContact">
+              <span *ngIf="!isEditing">{{ student.emergencyContact }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

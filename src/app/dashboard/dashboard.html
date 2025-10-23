@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+ <div class="dashboard-container">
+    <!-- Header -->
+    <header class="dashboard-header">
+      <h1>Student Dashboard</h1>
+      <div class="header-info">
+        <span class="student-name">Welcome, {{studentName}}!</span>
+        <button class="logout-btn" (click)="logout()">Logout</button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="dashboard-content">
+
+      <!-- Welcome Section -->
+      <div class="welcome-section">
+        <h2>Welcome to your Dashboard!</h2>
+        <p>You have successfully logged in.</p>
+        <div class="quick-stats">
+          <div class="stat-item">
+            <span class="stat-value">{{totalSubjects}}</span>
+            <span class="stat-label">Total Subjects</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">{{overallPercentage}}%</span>
+            <span class="stat-label">Overall Percentage</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">{{totalCredits}}</span>
+            <span class="stat-label">Total Credits</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Dashboard Cards -->
+      <div class="dashboard-cards">
+        <!-- Profile Card -->
+        <div class="card profile-card" (click)="viewProfile()">
+          <div class="card-icon">👤</div>
+          <h3>Profile</h3>
+          <p>Manage your personal information</p>
+          <div class="card-badge" *ngIf="profileIncomplete">!</div>
+        </div>
+
+        <!-- Courses Card -->
+        <div class="card courses-card" (click)="viewCourses()">
+          <div class="card-icon">📚</div>
+          <h3>Courses</h3>
+          <p>View your enrolled courses</p>
+          <span class="course-count">{{enrolledCourses}} courses</span>
+        </div>
+
+        <!-- Grades Card -->
+        <div class="card grades-card">
+          <div class="card-header">
+            <h3>Academic Performance</h3>
+            <button class="export-btn" (click)="exportGrades()">📊 Export</button>
+          </div>
+          <p>Check your academic progress</p>
+
+          <!-- Overall Performance -->
+          <div class="performance-overview">
+            <div class="overall-grade">
+              <div class="grade-circle">
+                <span class="grade-percentage">{{overallPercentage}}%</span>
+                <span class="grade-label">Overall</span>
+              </div>
+            </div>
+            <div class="performance-stats">
+              <div class="stat">
+                <span class="stat-number">{{totalSubjects}}</span>
+                <span class="stat-text">Subjects</span>
+              </div>
+              <div class="stat">
+                <span class="stat-number">{{totalCredits}}</span>
+                <span class="stat-text">Credits</span>
+              </div>
+              <div class="stat">
+                <span class="stat-number">{{getGradeLetter(overallPercentage)}}</span>
+                <span class="stat-text">Grade</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Semester Navigation -->
+          <div class="semester-navigation">
+            <button class="nav-btn" (click)="previousSemesters()" [disabled]="currentSemesterPage === 0">‹</button>
+            <div class="semester-tabs">
+              <button
+                *ngFor="let semester of displayedSemesters"
+                class="semester-tab"
+                [class.active]="selectedSemester === semester.id"
+                (click)="selectSemester(semester.id)">
+                Sem {{semester.id}}
+              </button>
+            </div>
+            <button class="nav-btn" (click)="nextSemesters()" [disabled]="currentSemesterPage >= maxSemesterPage">›</button>
+          </div>
+
+          <!-- Selected Semester Details -->
+          <div class="semester-details" *ngIf="selectedSemester">
+            <div class="semester-header">
+              <h4>Semester {{selectedSemester}} Details</h4>
+              <span class="gpa">GPA: {{getSemesterGPA(selectedSemester)}}</span>
+            </div>
+
+            <!-- Semester Summary -->
+            <div class="semester-summary">
+              <div class="summary-item">
+                <span class="summary-value">{{getSemesterSubjects(selectedSemester).length}}</span>
+                <span class="summary-label">Subjects</span>
+              </div>
+              <div class="summary-item">
+                <span class="summary-value">{{getSemesterPercentage(selectedSemester)}}%</span>
+                <span class="summary-label">Percentage</span>
+              </div>
+              <div class="summary-item">
+                <span class="summary-value">{{getSemesterCredits(selectedSemester)}}</span>
+                <span class="summary-label">Credits</span>
+              </div>
+              <div class="summary-item">
+                <span class="summary-value">{{getGradeLetter(getSemesterPercentage(selectedSemester))}}</span>
+                <span class="summary-label">Grade</span>
+              </div>
+            </div>
+
+            <!-- Subjects List -->
+            <div class="subjects-list">
+              <h5>Subjects & Grades</h5>
+              <div class="subject-item" *ngFor="let subject of getSemesterSubjects(selectedSemester)">
+                <div class="subject-info">
+                  <span class="subject-name">{{subject.name}}</span>
+                  <span class="subject-credits">{{subject.credits}} credits</span>
+                </div>
+                <div class="subject-grade">
+                  <span class="grade" [class]="getGradeClass(subject.grade)">{{subject.grade}}%</span>
+                  <span class="grade-letter">{{getGradeLetter(subject.grade)}}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Performance Chart -->
+            <div class="performance-chart">
+              <h5>Performance Trend</h5>
+              <div class="chart-bars">
+                <div class="chart-bar" *ngFor="let subject of getSemesterSubjects(selectedSemester)"
+                     [style.height]="(subject.grade/100)*120 + 'px'"
+                     [class]="getGradeClass(subject.grade)">
+                  <span class="bar-label">{{subject.grade}}%</span>
+                  <span class="bar-subject">{{subject.name.substring(0, 3)}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- All Semesters Overview -->
+          <div class="all-semesters-overview">
+            <h5>All Semesters Overview</h5>
+            <div class="semester-mini-cards">
+              <div class="semester-mini-card"
+                   *ngFor="let semester of semesterData"
+                   (click)="selectSemester(semester.id)"
+                   [class.active]="selectedSemester === semester.id">
+                <span class="mini-semester">Sem {{semester.id}}</span>
+                <span class="mini-percentage">{{getSemesterPercentage(semester.id)}}%</span>
+                <div class="mini-progress">
+                  <div class="progress-bar" [style.width]="getSemesterPercentage(semester.id) + '%'"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Settings Card -->
+        <div class="card settings-card" (click)="openSettings()">
+          <div class="card-icon">⚙️</div>
+          <h3>Settings</h3>
+          <p>Account and privacy settings</p>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <h3>Quick Actions</h3>
+        <div class="action-buttons">
+          <button class="action-btn" (click)="downloadTranscript()">
+            <span class="action-icon">📄</span>
+            Download Transcript
+          </button>
+          <button class="action-btn" (click)="viewAttendance()">
+            <span class="action-icon">📅</span>
+            View Attendance
+          </button>
+          <button class="action-btn" (click)="contactAdvisor()">
+            <span class="action-icon">💬</span>
+            Contact Advisor
+          </button>
+          <button class="action-btn" (click)="requestDocuments()">
+            <span class="action-icon">📋</span>
+            Request Documents
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Notification Toast -->
+    <div *ngIf="showNotification" class="notification-toast" [class]="notificationType">
+      <span>{{notificationMessage}}</span>
+      <button class="close-toast" (click)="hideNotification()">×</button>
+    </div>
+  </div>
+</body>
+
+
+</html>

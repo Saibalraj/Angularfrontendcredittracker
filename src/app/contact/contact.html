@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Advisor</title>
+</head>
+<body>
+  <div class="contact-container">
+    <!-- Header -->
+    <div class="header">
+      <button class="back-btn" (click)="goBack()">← Back to Dashboard</button>
+      <h1>Contact Advisor</h1>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div *ngIf="message" class="message" [ngClass]="messageType === 'success' ? 'success-msg' : 'error-msg'">
+      <span class="message-icon">{{ messageType === 'success' ? '✅' : '❌' }}</span>
+      {{ message }}
+      <button class="close-btn" (click)="clearMessage()">×</button>
+    </div>
+
+    <!-- Contact Form -->
+    <div class="contact-form">
+      <h2>Send Message to Advisor</h2>
+      <form (ngSubmit)="submitMessage()">
+        <div class="form-group">
+          <label for="subject">Subject *</label>
+          <input type="text" id="subject" [(ngModel)]="contactForm.subject" name="subject"
+                 placeholder="Brief description of your query" required>
+        </div>
+
+        <div class="form-group">
+          <label for="priority">Priority</label>
+          <select id="priority" [(ngModel)]="contactForm.priority" name="priority">
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="message">Message *</label>
+          <textarea id="message" [(ngModel)]="contactForm.message" name="message"
+                    placeholder="Describe your query in detail..." rows="5" required></textarea>
+        </div>
+
+        <button type="submit" class="submit-btn">Send Message</button>
+      </form>
+    </div>
+
+    <!-- Message History -->
+    <div class="message-history">
+      <h2>Message History</h2>
+      <div class="messages-list">
+        <div *ngFor="let msg of messages" class="message-item">
+          <div class="message-header">
+            <h3>{{ msg.subject }}</h3>
+            <div class="message-meta">
+              <span class="priority-badge" [ngClass]="getPriorityClass(msg.priority)">
+                {{ msg.priority }}
+              </span>
+              <span class="status-badge" [ngClass]="getStatusClass(msg.status)">
+                {{ msg.status }}
+              </span>
+            </div>
+          </div>
+          <div class="message-content">
+            <p>{{ msg.message }}</p>
+          </div>
+          <div class="message-footer">
+            <span class="date">{{ msg.date }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

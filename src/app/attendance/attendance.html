@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+<div class="attendance-container">
+  <div class="attendance-header">
+    <h1><i class="icon">📊</i> Attendance Management</h1>
+    <button class="back-btn" (click)="goBack()">
+      <i class="icon">←</i> Back to Dashboard
+    </button>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">📈</div>
+      <div class="stat-content">
+        <h3>{{ getAttendanceStats().total }}</h3>
+        <p>Total Classes</p>
+      </div>
+    </div>
+    <div class="stat-card present">
+      <div class="stat-icon">✅</div>
+      <div class="stat-content">
+        <h3>{{ getAttendanceStats().present }}</h3>
+        <p>Present</p>
+      </div>
+    </div>
+    <div class="stat-card absent">
+      <div class="stat-icon">❌</div>
+      <div class="stat-content">
+        <h3>{{ getAttendanceStats().absent }}</h3>
+        <p>Absent</p>
+      </div>
+    </div>
+    <div class="stat-card late">
+      <div class="stat-icon">⏰</div>
+      <div class="stat-content">
+        <h3>{{ getAttendanceStats().late }}</h3>
+        <p>Late</p>
+      </div>
+    </div>
+    <div class="stat-card percentage">
+      <div class="stat-icon">📊</div>
+      <div class="stat-content">
+        <h3>{{ getAttendanceStats().percentage }}%</h3>
+        <p>Attendance Rate</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Student Info Card -->
+  <div class="student-info-card">
+    <div class="student-avatar">
+      <i class="icon">👨‍🎓</i>
+    </div>
+    <div class="student-details">
+      <h3>{{ studentInfo.name }}</h3>
+      <p><strong>Roll No:</strong> {{ studentInfo.rollNo }}</p>
+      <p><strong>Program:</strong> {{ studentInfo.program }}</p>
+      <p><strong>Department:</strong> {{ studentInfo.department }}</p>
+      <p><strong>Semester:</strong> {{ studentInfo.semester }}</p>
+    </div>
+    <div class="attendance-summary">
+      <div class="summary-item">
+        <span class="summary-label">Current Month</span>
+        <span class="summary-value">{{ getCurrentMonthStats().percentage }}%</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">This Week</span>
+        <span class="summary-value">{{ getCurrentWeekStats().percentage }}%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons (Student View) -->
+  <div class="action-buttons">
+    <button class="export-btn" (click)="exportAttendance()">
+      <i class="icon">📤</i> Export My Attendance
+    </button>
+    <button class="print-btn" (click)="printAttendance()">
+      <i class="icon">🖨️</i> Print Report
+    </button>
+    <button class="refresh-btn" (click)="refreshData()">
+      <i class="icon">🔄</i> Refresh
+    </button>
+  </div>
+
+  <!-- Quick Stats by Subject -->
+  <div class="subject-stats">
+    <h3><i class="icon">📚</i> Attendance by Subject</h3>
+    <div class="subject-cards">
+      <div *ngFor="let subjectStat of getSubjectStats()" class="subject-card">
+        <div class="subject-header">
+          <h4>{{ subjectStat.subject }}</h4>
+          <span class="subject-percentage" [ngClass]="getPercentageClass(subjectStat.percentage)">
+            {{ subjectStat.percentage }}%
+          </span>
+        </div>
+        <div class="subject-details">
+          <div class="subject-stats-row">
+            <span>Present: {{ subjectStat.present }}</span>
+            <span>Absent: {{ subjectStat.absent }}</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="subjectStat.percentage"
+                 [ngClass]="getPercentageClass(subjectStat.percentage)"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <div class="filter-group">
+      <label>Filter by Status:</label>
+      <select [(ngModel)]="filterStatus" (change)="applyFilters()">
+        <option value="all">All Status</option>
+        <option value="present">Present</option>
+        <option value="absent">Absent</option>
+        <option value="late">Late</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Filter by Subject:</label>
+      <select [(ngModel)]="filterSubject" (change)="applyFilters()">
+        <option value="all">All Subjects</option>
+        <option *ngFor="let subject of subjects" [value]="subject.name">
+          {{ subject.name }}
+        </option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Filter by Month:</label>
+      <select [(ngModel)]="filterMonth" (change)="applyFilters()">
+        <option value="all">All Months</option>
+        <option *ngFor="let month of months" [value]="month.value">
+          {{ month.name }}
+        </option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Sort by:</label>
+      <select [(ngModel)]="sortBy" (change)="applyFilters()">
+        <option value="date-desc">Date (Newest First)</option>
+        <option value="date-asc">Date (Oldest First)</option>
+        <option value="subject">Subject</option>
+        <option value="status">Status</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Attendance Records Table -->
+  <div class="records-section">
+    <h3>My Attendance Records</h3>
+    <div class="table-info">
+      <p>Showing {{ filteredRecords.length }} of {{ attendanceRecords.length }} records</p>
+    </div>
+    <div class="table-container">
+      <table class="attendance-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Day</th>
+            <th>Subject</th>
+            <th>Status</th>
+            <th>Time</th>
+            <th>Remarks</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let record of filteredRecords" class="record-row">
+            <td class="date-cell">
+              <strong>{{ record.date }}</strong>
+            </td>
+            <td class="day-cell">
+              {{ getDayName(record.date) }}
+            </td>
+            <td class="subject-cell">
+              <div class="subject-info">
+                <strong>{{ record.subject }}</strong>
+                <span class="subject-code">{{ getSubjectCode(record.subject) }}</span>
+              </div>
+            </td>
+            <td>
+              <span class="status-badge" [ngClass]="getStatusClass(record.status)">
+                {{ getStatusIcon(record.status) }} {{ record.status | titlecase }}
+              </span>
+            </td>
+            <td>{{ record.time || 'N/A' }}</td>
+            <td class="remarks-cell">
+              <span [title]="record.remarks || 'No remarks'">
+                {{ (record.remarks || 'No remarks') | truncate:30 }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div *ngIf="filteredRecords.length === 0" class="no-records">
+        <div class="no-records-icon">📝</div>
+        <h4>No attendance records found</h4>
+        <p>Try adjusting your filters or check back later for new records.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Attendance Trends Chart Section -->
+  <div class="trends-section">
+    <h3><i class="icon">📈</i> Attendance Trends</h3>
+    <div class="trends-chart">
+      <div class="chart-placeholder">
+        <p>Monthly Attendance Overview</p>
+        <div class="monthly-bars">
+          <div *ngFor="let month of monthlyTrends" class="month-bar">
+            <div class="bar-container">
+              <div class="bar-fill" [style.height.%]="month.percentage"></div>
+            </div>
+            <span class="month-label">{{ month.month }}</span>
+            <span class="month-percentage">{{ month.percentage }}%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Message Display -->
+  <div *ngIf="message" class="message" [ngClass]="messageType === 'success' ? 'success-msg' : 'error-msg'">
+    <span class="message-icon">{{ messageType === 'success' ? '✅' : '⚠️' }}</span>
+    {{ message }}
+    <button class="close-message" (click)="clearMessage()">×</button>
+  </div>
+</div>
+</body>
+</html>

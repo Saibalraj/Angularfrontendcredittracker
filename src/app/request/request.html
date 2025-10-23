@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document Request</title>
+</head>
+<body>
+  <div class="request-container">
+    <!-- Header -->
+    <div class="header">
+      <button class="back-btn" (click)="goBack()">← Back to Dashboard</button>
+      <h1>Document Request</h1>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div *ngIf="message" class="message" [ngClass]="messageType === 'success' ? 'success-msg' : 'error-msg'">
+      <span class="message-icon">{{ messageType === 'success' ? '✅' : '❌' }}</span>
+      {{ message }}
+      <button class="close-btn" (click)="clearMessage()">×</button>
+    </div>
+
+    <!-- Request Form -->
+    <div class="request-form">
+      <h2>Request New Document</h2>
+      <form (ngSubmit)="submitRequest()">
+        <div class="form-group">
+          <label for="documentType">Document Type *</label>
+          <select id="documentType" [(ngModel)]="requestForm.documentType" name="documentType" required>
+            <option value="">Select Document Type</option>
+            <option *ngFor="let type of documentTypes" [value]="type">{{ type }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="purpose">Purpose *</label>
+          <input type="text" id="purpose" [(ngModel)]="requestForm.purpose" name="purpose"
+                 placeholder="e.g., Higher Studies Application" required>
+        </div>
+
+        <div class="form-group">
+          <label for="remarks">Additional Remarks</label>
+          <textarea id="remarks" [(ngModel)]="requestForm.remarks" name="remarks"
+                    placeholder="Any additional information..." rows="3"></textarea>
+        </div>
+
+        <button type="submit" class="submit-btn">Submit Request</button>
+      </form>
+    </div>
+
+    <!-- Request History -->
+    <div class="request-history">
+      <h2>Request History</h2>
+      <div class="requests-list">
+        <div *ngFor="let request of requests" class="request-item">
+          <div class="request-header">
+            <h3>{{ request.documentType }}</h3>
+            <span class="status-badge" [ngClass]="getStatusClass(request.status)">
+              {{ getStatusIcon(request.status) }} {{ request.status }}
+            </span>
+          </div>
+          <div class="request-details">
+            <p><strong>Purpose:</strong> {{ request.purpose }}</p>
+            <p><strong>Request Date:</strong> {{ request.requestDate }}</p>
+            <p *ngIf="request.expectedDate"><strong>Expected Date:</strong> {{ request.expectedDate }}</p>
+            <p *ngIf="request.remarks"><strong>Remarks:</strong> {{ request.remarks }}</p>
+          </div>
+          <div class="request-actions">
+            <button *ngIf="request.status === 'Ready'" class="download-btn"
+                    (click)="downloadDocument(request)">
+              📄 Download
+            </button>
+            <span *ngIf="request.status !== 'Ready'" class="status-text">
+              {{ request.status === 'Pending' ? 'Under Review' :
+                 request.status === 'Approved' ? 'Processing' : 'Not Available' }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

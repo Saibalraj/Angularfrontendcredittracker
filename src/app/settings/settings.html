@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings</title>
+</head>
+<body>
+ <div class="settings-container">
+  <div class="settings-header">
+    <h1><i class="icon settings-icon">⚙️</i> Settings</h1>
+    <button class="back-btn" (click)="goBack()">
+      <i class="icon">←</i> Back to Dashboard
+    </button>
+  </div>
+
+  <div class="settings-content">
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <h3>Quick Actions</h3>
+      <div class="action-buttons">
+        <button class="action-btn" (click)="exportData()">
+          <i class="icon">📤</i> Export Data
+        </button>
+        <button class="action-btn" (click)="changePassword()">
+          <i class="icon">🔒</i> Change Password
+        </button>
+        <button class="action-btn" (click)="manageDevices()">
+          <i class="icon">📱</i> Manage Devices
+        </button>
+        <button class="action-btn danger" (click)="showDeleteAccount = true">
+          <i class="icon">🗑️</i> Delete Account
+        </button>
+      </div>
+    </div>
+
+    <!-- Account Settings -->
+    <div class="settings-section">
+      <h2><i class="icon">👤</i> Account Settings</h2>
+      <div class="setting-item">
+        <div class="setting-info">
+          <label>Email Notifications</label>
+          <span class="setting-description">Receive email updates about your account activity</span>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" [(ngModel)]="settings.emailNotifications" />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <label>Profile Visibility</label>
+          <span class="setting-description">Control who can see your profile information</span>
+        </div>
+        <select [(ngModel)]="settings.profileVisibility" (change)="onSettingChange('profileVisibility')">
+          <option value="public">Public</option>
+          <option value="friends">Friends Only</option>
+          <option value="private">Private</option>
+        </select>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <label>Two-Factor Authentication</label>
+          <span class="setting-description">Add an extra layer of security to your account</span>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" [(ngModel)]="settings.twoFactorAuth" (change)="onTwoFactorToggle()" />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="setting-item" *ngIf="settings.twoFactorAuth">
+        <div class="setting-info">
+          <label>2FA Method</label>
+          <span class="setting-description">Choose your two-factor authentication method</span>
+        </div>
+        <select [(ngModel)]="settings.twoFactorMethod">
+          <option value="app">Authenticator App</option>
+          <option value="sms">SMS</option>
+          <option value="email">Email</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Privacy Settings -->
+    <div class="settings-section">
+      <h2><i class="icon">🔒</i> Privacy Settings</h2>
+      <div class="setting-item">
+        <div class="setting-info">
+          <label>Show Email Address</label>
+          <span class="setting-description">Allow others to see your email address</span>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" [(ngModel)]="settings.showEmail" />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <label>Show Phone Number</label>
+          <span class="setting-description">Allow others to see your phone number</span>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" [(ngModel)]="settings.showPhone" />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <label>Data Sharing</label>
+          <span class="setting-description">Allow anonymous data sharing for analytics</span>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" [(ngModel)]="settings.dataSharing" />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <label>Activity Status</label>
+          <span class="setting-description">Show when you're active on the platform</span>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" [(ngModel)]="settings.showActivityStatus" />
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Preferences -->
+    <div class="settings-section">
+      <h2><i class="icon">🎨</i> Preferences</h2>
+      <div class="setting-item">
+        <div class="setting-info">
+          <label>Theme</label>
+          <span class="setting-description">Choose your preferred interface theme</span>
+        </div>
+        <select [(ngModel)]="settings.theme" (change)="applyTheme()">
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+          <option value="auto">Auto (System)</option>
+        </select>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <label>Language</label>
+          <span class="setting-description">Select your preferred language</span>
+        </div>
+        <select [(ngModel)]="settings.language" (change)="onLanguageChange()">
+          <option value="en">English</option>
+          <option value="es">Spanish</option>
+          <option value="fr">French</option>
+          <option value="de">German</option>
+          <option value="zh">Chinese</option>
+        </select>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <label>Font Size</label>
+          <span class="setting-description">Adjust the text size throughout the application</span>
+        </div>
+        <select [(ngModel)]="settings.fontSize">
+          <option value="small">Small</option>
+          <option value="medium">Medium</option>
+          <option value="large">Large</option>
+          <option value="xlarge">Extra Large</option>
+        </select>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <label>Time Format</label>
+          <span class="setting-description">Choose how time is displayed</span>
+        </div>
+        <select [(ngModel)]="settings.timeFormat">
+          <option value="12h">12-hour (AM/PM)</option>
+          <option value="24h">24-hour</option>
+        </select>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <label>Auto-save Interval</label>
+          <span class="setting-description">How often your work is automatically saved (minutes)</span>
+        </div>
+        <select [(ngModel)]="settings.autoSaveInterval">
+          <option value="1">1 minute</option>
+          <option value="5">5 minutes</option>
+          <option value="10">10 minutes</option>
+          <option value="15">15 minutes</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Notification Settings -->
+    <div class="settings-section">
+      <h2><i class="icon">🔔</i> Notification Settings</h2>
+      <div class="setting-item">
+        <div class="setting-info">
+          <label>Push Notifications</label>
+          <span class="setting-description">Receive notifications in your browser</span>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" [(ngModel)]="settings.pushNotifications" />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <label>Email Digest</label>
+          <span class="setting-description">Receive weekly summary emails</span>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" [(ngModel)]="settings.emailDigest" />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <label>Sound Alerts</label>
+          <span class="setting-description">Play sounds for new notifications</span>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" [(ngModel)]="settings.soundAlerts" />
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Actions Section -->
+    <div class="settings-actions">
+      <button class="save-btn" (click)="saveSettings()" [disabled]="!settingsChanged">
+        <i class="icon">💾</i> Save Changes
+      </button>
+      <button class="reset-btn" (click)="resetSettings()">
+        <i class="icon">🔄</i> Reset to Default
+      </button>
+      <button class="cancel-btn" (click)="cancelChanges()" *ngIf="settingsChanged">
+        <i class="icon">❌</i> Cancel
+      </button>
+    </div>
+
+    <!-- Message Display -->
+    <div *ngIf="message" class="message" [ngClass]="messageType">
+      <span class="message-icon">{{ messageType === 'success-msg' ? '✅' : '⚠️' }}</span>
+      {{ message }}
+      <button class="close-message" (click)="clearMessage()">×</button>
+    </div>
+
+    <!-- Delete Account Confirmation Modal -->
+    <div *ngIf="showDeleteAccount" class="modal-overlay">
+      <div class="modal-content">
+        <h3>Delete Account</h3>
+        <p>Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently lost.</p>
+
+        <div class="confirmation-input">
+          <label>Type "DELETE" to confirm:</label>
+          <input type="text" [(ngModel)]="deleteConfirmation" placeholder="DELETE" />
+        </div>
+
+        <div class="modal-actions">
+          <button class="cancel-btn" (click)="showDeleteAccount = false; deleteConfirmation = ''">
+            Cancel
+          </button>
+          <button class="danger-btn"
+                  (click)="deleteAccount()"
+                  [disabled]="deleteConfirmation !== 'DELETE'">
+            Delete My Account
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div *ngIf="showChangePassword" class="modal-overlay">
+      <div class="modal-content">
+        <h3>Change Password</h3>
+        <div class="password-form">
+          <div class="form-group">
+            <label>Current Password</label>
+            <input type="password" [(ngModel)]="passwordData.currentPassword" />
+          </div>
+          <div class="form-group">
+            <label>New Password</label>
+            <input type="password" [(ngModel)]="passwordData.newPassword" />
+          </div>
+          <div class="form-group">
+            <label>Confirm New Password</label>
+            <input type="password" [(ngModel)]="passwordData.confirmPassword" />
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button class="cancel-btn" (click)="showChangePassword = false; resetPasswordForm()">
+            Cancel
+          </button>
+          <button class="save-btn" (click)="updatePassword()">
+            Update Password
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

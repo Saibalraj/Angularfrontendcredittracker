@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Academic Transcript</title>
+</head>
+<body>
+  <div class="transcript-container">
+    <!-- Header -->
+    <div class="header">
+      <button class="back-btn" (click)="goBack()">← Back to Dashboard</button>
+      <h1>Academic Transcript</h1>
+      <div class="header-actions">
+        <button class="export-btn" (click)="exportTranscript()">📄 Export</button>
+        <button class="print-btn" (click)="printTranscript()">🖨️ Print</button>
+      </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div *ngIf="message" class="message" [ngClass]="messageType === 'success' ? 'success-msg' : 'error-msg'">
+      <span class="message-icon">{{ messageType === 'success' ? '✅' : '❌' }}</span>
+      {{ message }}
+      <button class="close-btn" (click)="clearMessage()">×</button>
+    </div>
+
+    <!-- Student Information -->
+    <div class="student-info">
+      <h2>{{ studentInfo.name }}</h2>
+      <p><strong>Roll Number:</strong> {{ studentInfo.rollNo }}</p>
+      <p><strong>Program:</strong> {{ studentInfo.program }}</p>
+      <p><strong>Department:</strong> {{ studentInfo.department }}</p>
+      <p><strong>Admission Year:</strong> {{ studentInfo.admissionYear }}</p>
+      <p><strong>Expected Graduation:</strong> {{ studentInfo.expectedGraduation }}</p>
+    </div>
+
+    <!-- Academic Summary -->
+    <div class="academic-summary">
+      <h3>Academic Summary</h3>
+      <div class="summary-grid">
+        <div class="summary-item">
+          <span class="label">Overall GPA:</span>
+          <span class="value">{{ getOverallGPA().toFixed(2) }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="label">Total Credits:</span>
+          <span class="value">{{ getTotalCredits() }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="label">Semesters Completed:</span>
+          <span class="value">{{ semesters.length }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Semester Filter -->
+    <div class="semester-filter">
+      <h3>Filter by Semester</h3>
+      <div class="filter-buttons">
+        <button [class.active]="selectedSemester === 0" (click)="selectSemester(0)">
+          All Semesters
+        </button>
+        <button *ngFor="let semester of semesters"
+                [class.active]="selectedSemester === semester.number"
+                (click)="selectSemester(semester.number)">
+          Semester {{ semester.number }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Course Details -->
+    <div class="course-details">
+      <h3>Course Details</h3>
+      <div class="courses-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Course Code</th>
+              <th>Course Name</th>
+              <th>Credits</th>
+              <th>Grade</th>
+              <th>Points</th>
+              <th>Semester</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let course of getFilteredCourses()">
+              <td>{{ course.code }}</td>
+              <td>{{ course.name }}</td>
+              <td>{{ course.credits }}</td>
+              <td>
+                <span class="grade" [ngClass]="getGradeClass(course.grade)">
+                  {{ course.grade }}
+                </span>
+              </td>
+              <td>{{ course.points }}</td>
+              <td>{{ course.semester }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Semester-wise Summary -->
+    <div class="semester-summary">
+      <h3>Semester-wise Summary</h3>
+      <div class="semester-cards">
+        <div *ngFor="let semester of semesters" class="semester-card">
+          <h4>Semester {{ semester.number }}</h4>
+          <div class="semester-stats">
+            <div class="stat">
+              <span class="label">GPA:</span>
+              <span class="value">{{ semester.gpa.toFixed(2) }}</span>
+            </div>
+            <div class="stat">
+              <span class="label">Credits:</span>
+              <span class="value">{{ semester.credits }}</span>
+            </div>
+            <div class="stat">
+              <span class="label">Courses:</span>
+              <span class="value">{{ semester.courses.length }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

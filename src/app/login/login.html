@@ -1,0 +1,76 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="header">
+      <div class="logo">🎓</div>
+      <h1>Student Login</h1>
+      <p class="subtitle">Welcome back to your account</p>
+    </div>
+
+    <!-- Message Display -->
+    <div *ngIf="showMessage" class="message" [ngClass]="messageType === 'success' ? 'success' : 'error'">
+      <div class="message-content">
+        <span class="message-icon">{{ messageType === 'success' ? '✅' : '⚠️' }}</span>
+        <span class="message-text">{{ message }}</span>
+        <button class="close-btn" (click)="closeMessage()">&times;</button>
+      </div>
+    </div>
+
+    <!-- Login Form -->
+    <form (ngSubmit)="login()" #loginForm="ngForm">
+      <div class="form-group">
+        <input
+          type="text"
+          name="username"
+          [(ngModel)]="username"
+          #usernameInput="ngModel"
+          placeholder="User"
+          required
+          [class.error]="usernameInput.invalid && (usernameInput.dirty || usernameInput.touched)"
+        />
+        <div *ngIf="usernameInput.invalid && (usernameInput.dirty || usernameInput.touched)" class="error-msg">
+          Valid username number is required
+        </div>
+      </div>
+
+      <div class="form-group">
+        <input
+          type="password"
+          name="password"
+          [(ngModel)]="password"
+          #passwordInput="ngModel"
+          placeholder="Password"
+          required
+          [class.error]="passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)"
+        />
+        <div *ngIf="passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)" class="error-msg">
+          Password is required
+        </div>
+      </div>
+
+      <div class="options">
+        <label>
+          <input type="checkbox"> Remember me
+        </label>
+        <button type="button" class="forgot-password" (click)="forgotPassword()">Forgot Password?</button>
+      </div>
+
+      <button
+        type="submit"
+        class="login-button"
+        [disabled]="!loginForm.valid || isLoading"
+      >
+        <span *ngIf="!isLoading">Login</span>
+        <span *ngIf="isLoading" class="loading">
+          <div class="spinner"></div>
+          Logging in...
+        </span>
+      </button>
+    </form>
+
+    <p class="separator">OR</p>
+    <p class="register-prompt">
+      Don't have an account?
+      <button class="sign-button" (click)="goToSignup()">Sign Up</button>
+    </p>
+  </div>
+</div>
