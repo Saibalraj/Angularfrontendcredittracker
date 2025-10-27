@@ -1,0 +1,191 @@
+/* src/app/courses/courses.component.css */
+
+/* --- Import General Layout Styles from dashboard.css --- */
+.dashboard-body {
+    background-color: #f8faff; /* Very light blue background */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    color: #1f2937;
+}
+
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar structure is important for layout */
+.sidebar {
+    width: 260px;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #e5e7eb;
+}
+.sidebar-header {
+    padding: 1.5rem;
+    font-size: 1.25rem;
+    color: #1f2937;
+    border-bottom: 1px solid #e5e7eb;
+}
+.sidebar-nav ul { list-style: none; padding: 0; margin: 0; }
+.sidebar-nav a {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 1.5rem;
+    margin: 0.25rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #4b5563;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+.sidebar-nav a:hover { background-color: #f3f4f6; color: #1f2937; }
+.sidebar-nav a.active {
+    background-color: #e0e7ff; /* Light blue */
+    color: #3b82f6; /* Primary blue */
+}
+.sidebar-nav a i { width: 20px; }
+.sidebar-footer { border-top: 1px solid #e5e7eb; padding: 1rem; }
+
+/* Main Content area */
+.main-content {
+    flex: 1;
+    padding: 2rem 3rem;
+    overflow-y: auto; 
+}
+
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+}
+
+.main-header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+}
+
+.main-header p {
+    margin: 0;
+    color: #6b7280;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Primary Button Style (from how-it-works.css and dashboard.css) */
+.btn-primary {
+    background-color: #3b82f6; /* Primary blue color */
+    color: #ffffff; /* White text */
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    border-radius: 8px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.btn-primary:hover {
+    background-color: #2563eb; /* Darker blue on hover */
+}
+
+/* Icon Button Style (from dashboard.css) */
+.btn-icon {
+    border: 1px solid #e5e7eb;
+    background-color: #ffffff;
+    color: #6b7280;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+.btn-icon:hover {
+    background-color: #f3f4f6;
+    color: #1f2937;
+}
+
+/* Delete Button specific color */
+.delete-btn:hover {
+    color: #ef4444; /* Red color */
+    border-color: #fecaca;
+    background-color: #fef2f2;
+}
+
+/* --- Table Styling (from dashboard.css) --- */
+.courses-section h2 {
+    margin-bottom: 1.5rem;
+}
+
+.table-wrapper {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 1rem;
+    border: 1px solid #e5e7eb;
+    overflow-x: auto; /* Ensure responsiveness */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 1rem;
+    text-align: left;
+}
+
+thead {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+th {
+    color: #6b7280;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+tbody tr {
+    border-bottom: 1px solid #f3f4f6;
+}
+
+tbody tr:last-child {
+    border-bottom: none;
+}
+
+/* --- State Messages --- */
+.loading-message, .error-message, .empty-state {
+    text-align: center;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-top: 2rem;
+}
+
+.loading-message {
+    background-color: #e0e7ff;
+    color: #3b82f6;
+}
+
+.error-message {
+    background-color: #fee2e2;
+    color: #ef4444;
+}
+
+.empty-state {
+    background-color: #ffffff;
+    border: 1px dashed #d1d5db;
+}
+
+.loading-message p i {
+    margin-right: 0.5rem;
+}

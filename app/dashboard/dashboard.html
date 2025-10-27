@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credit Tracker Dashboard</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* --- Basic Setup & Dashboard Layout --- */
+        :root {
+            --primary-color: #4A90E2;
+            --background-color: #f4f7fa;
+            --sidebar-bg: #ffffff;
+            --text-color: #333333;
+            --text-light: #777777;
+            --border-color: #e8e8e8;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --danger-color: #FF6384;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .dashboard-container {
+            display: flex;
+        }
+
+        /* --- Sidebar Styling --- */
+        .sidebar {
+            width: 260px;
+            background-color: var(--sidebar-bg);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 10;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+        
+        .sidebar-nav {
+            flex-grow: 1;
+            padding: 1rem 0;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            text-decoration: none;
+            color: var(--text-light);
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-nav a.active, .sidebar-nav a:hover {
+            background-color: #e9f2fe;
+            color: var(--primary-color);
+            border-right: 3px solid var(--primary-color);
+        }
+
+        .sidebar-footer {
+            padding: 1rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .user-profile div {
+            line-height: 1.3;
+        }
+
+        .user-profile strong {
+            font-size: 0.9rem;
+        }
+        
+        .user-profile span {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+        
+        .logout-btn {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 1.2rem;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+        }
+        
+        /* --- Main Content Styling --- */
+        .main-content {
+            flex-grow: 1;
+            margin-left: 260px;
+            padding: 2rem;
+        }
+
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .main-header h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+
+        .main-header p {
+            margin: 5px 0 0;
+            color: var(--text-light);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            transition: background-color 0.2s;
+        }
+
+        .btn-icon {
+             background: none;
+             border: none;
+             font-size: 1.5rem;
+             color: var(--text-light);
+             cursor: pointer;
+        }
+        
+        /* --- Stats Grid Styling --- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            display: flex;
+            align-items: center;
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .card-icon {
+            font-size: 1.5rem;
+            padding: 15px;
+            border-radius: 50%;
+            margin-right: 1rem;
+            color: white;
+        }
+
+        .card-icon.blue { background-color: #4A90E2; }
+        .card-icon.green { background-color: #50E3C2; }
+        .card-icon.orange { background-color: #F5A623; }
+
+        .card-content span {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .card-content strong {
+            display: block;
+            font-size: 1.8rem;
+            margin-top: 5px;
+        }
+        
+        /* --- Courses Table Styling --- */
+        .courses-section {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .status {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status.in-progress {
+            background-color: #fffbe6;
+            color: #f5a623;
+        }
+
+        .status.completed {
+            background-color: #e6f7f4;
+            color: #50e3c2;
+        }
+
+        /* --- Dynamic Performance Chart Section Styling --- */
+        .performance-section {
+            margin-top: 2rem;
+        }
+
+        .performance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .performance-card {
+            background-color: #ffffff;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .performance-card h3 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 250px;
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+        
+        .chart-legend {
+            font-size: 0.9rem;
+            color: #555;
+            text-align: left;
+            display: inline-block;
+        }
+
+        .chart-legend p {
+            margin: 0.3rem 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .chart-legend .legend-color {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+            margin-right: 8px;
+        }
+
+        /* --- MODAL STYLES --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .modal-content h3 {
+            margin-top: 0;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-secondary {
+            background-color: #f1f1f1;
+            color: var(--text-color);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h3><i class="fa-solid fa-graduation-cap"></i> Credit Tracker</h3>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="#" class="active"><i class="fa-solid fa-table-columns"></i> Dashboard</a></li>
+                    <li><a href="#"><i class="fa-solid fa-book"></i> My Courses</a></li>
+                    <li><a href="#"><i class="fa-solid fa-calendar-days"></i> Semester Planner</a></li>
+                    <li><a href="#"><i class="fa-solid fa-chart-pie"></i> Reports</a></li>
+                    <li><a href="#"><i class="fa-solid fa-gear"></i> Settings</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdnHAArUOFzdR_EY7QWOyfgh3Rmsfk_kFtVA&s" alt="User Avatar">
+                    <div>
+                        <strong>Mansha Kaushal</strong>
+                        <span>BCA 'Software Technology'</span>
+                    </div>
+                </div>
+                <a href="#" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i></a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <div>
+                    <h1>Welcome back, Mansha!</h1>
+                    <p>Here's a summary of your academic progress.</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-icon"><i class="fa-solid fa-bell"></i></button>
+                    <button id="addCourseBtn" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add Course</button>
+                </div>
+            </header>
+
+            <section class="stats-grid">
+                <div class="stat-card">
+                    <div class="card-icon blue">
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                    <div class="card-content">
+                        <span>Total Credits Earned</span>
+                        <strong>98 / 120</strong>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="card-icon green">
+                        <i class="fa-solid fa-bullseye"></i>
+                    </div>
+                    <div class="card-content">
+                        <span>Current GPA</span>
+                        <strong>8.85</strong>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="card-icon orange">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                    <div class="card-content">
+                        <span>Graduation Progress</span>
+                        <strong>86%</strong>
+                    </div>
+                </div>
+            </section>
+
+            <section class="courses-section">
+                <h2>Current Semester Courses</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Course Code</th>
+                                <th>Course Name</th>
+                                <th>Credits</th>
+                                <th>Status</th>
+                                <th>Grade</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>CUTM1052</td>
+                                <td>Angular</td>
+                                <td>6</td>
+                                <td><span class="status in-progress">In Progress</span></td>
+                                <td>E</td>
+                            </tr>
+                            <tr>
+                                <td>CUTM1051</td>
+                                <td>Advance Java</td>
+                                <td>6</td>
+                                <td><span class="status in-progress">In Progress</span></td>
+                                <td>A+</td>
+                            </tr>
+                            <tr>
+                                <td>CUTM1054</td>
+                                <td>Product Development</td>
+                                <td>4</td>
+                                <td><span class="status completed">Completed</span></td>
+                                <td>A</td>
+                            </tr>
+                            <tr>
+                                <td>CUTM1053</td>
+                                <td>Spring Boot</td>
+                                <td>6</td>
+                                <td><span class="status completed">Completed</span></td>
+                                <td>A+</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            
+            <section class="performance-section">
+                <h2>Course Performance Breakdown</h2>
+                <div class="performance-grid" id="performanceGrid"> 
+                    <div class="performance-card">
+                        <h3>Angular</h3>
+                        <div class="chart-container"><canvas id="angularChart"></canvas></div>
+                        <div class="chart-legend">
+                            <p><span class="legend-color" style="background-color: #FF6384;"></span><strong>A:</strong> Assignments</p>
+                            <p><span class="legend-color" style="background-color: #FF9F40;"></span><strong>B:</strong> Mid-term Exam</p>
+                            <p><span class="legend-color" style="background-color: #FFCD56;"></span><strong>C:</strong> Final Project</p>
+                        </div>
+                    </div>
+
+                    <div class="performance-card">
+                        <h3>Advance Java</h3>
+                        <div class="chart-container"><canvas id="advanceJavaChart"></canvas></div>
+                        <div class="chart-legend">
+                            <p><span class="legend-color" style="background-color: #FF6384;"></span><strong>A:</strong> Assignments</p>
+                            <p><span class="legend-color" style="background-color: #FF9F40;"></span><strong>B:</strong> Mid-term Exam</p>
+                            <p><span class="legend-color" style="background-color: #FFCD56;"></span><strong>C:</strong> Final Project</p>
+                        </div>
+                    </div>
+
+                    <div class="performance-card">
+                        <h3>Product Development</h3>
+                        <div class="chart-container"><canvas id="productDevChart"></canvas></div>
+                        <div class="chart-legend">
+                           <p><span class="legend-color" style="background-color: #FF6384;"></span><strong>A:</strong> Assignments</p>
+                            <p><span class="legend-color" style="background-color: #FF9F40;"></span><strong>B:</strong> Mid-term Exam</p>
+                            <p><span class="legend-color" style="background-color: #FFCD56;"></span><strong>C:</strong> Final Project</p>
+                        </div>
+                    </div>
+                    
+                    <div class="performance-card">
+                        <h3>Spring Boot</h3>
+                        <div class="chart-container"><canvas id="springBootChart"></canvas></div>
+                        <div class="chart-legend">
+                            <p><span class="legend-color" style="background-color: #FF6384;"></span><strong>A:</strong> Assignments</p>
+                            <p><span class="legend-color" style="background-color: #FF9F40;"></span><strong>B:</strong> Mid-term Exam</p>
+                            <p><span class="legend-color" style="background-color: #FFCD56;"></span><strong>C:</strong> Final Project</p>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <div id="addCourseModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Add New Course Performance</h3>
+            <form id="newCourseForm">
+                <div class="form-group">
+                    <label for="courseName">Course Name</label>
+                    <input type="text" id="courseName" required>
+                </div>
+                <div class="form-group">
+                    <label for="assignmentsScore">Assignments Score (Max 1200)</label>
+                    <input type="number" id="assignmentsScore" min="0" max="1200" value="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="midtermScore">Mid-term Exam Score (Max 1200)</label>
+                    <input type="number" id="midtermScore" min="0" max="1200" value="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="finalScore">Final Project Score (Max 1200)</label>
+                    <input type="number" id="finalScore" min="0" max="1200" value="0" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Course & Analyze</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+        // Store charts globally to avoid recreation issues
+        const charts = {};
+
+        // ----------------------------------------------------------------------
+        // --- GLOBAL DATA (Updated with example scores to show graphs) ---
+        // ----------------------------------------------------------------------
+        let courseData = {
+            angular:      { assignments: 950, midterm: 700, finalProject: 450 },
+            advanceJava:  { assignments: 1100, midterm: 980, finalProject: 850 },
+            productDev:   { assignments: 800, midterm: 1050, finalProject: 900 },
+            springBoot:   { assignments: 1150, midterm: 900, finalProject: 1000 }
+        };
+
+        // --- MODAL FUNCTIONS (Show/Hide) ---
+        function showModal() {
+            document.getElementById('addCourseModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('addCourseModal').style.display = 'none';
+            document.getElementById('newCourseForm').reset();
+        }
+
+        // --- CHART RENDERING FUNCTION ---
+        function createCourseChart(canvasId, data) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            const maxScale = 1200; 
+
+            if (charts[canvasId]) {
+                charts[canvasId].destroy();
+            }
+
+            charts[canvasId] = new Chart(ctx, {
+                type: 'polarArea',
+                data: {
+                    labels: ['Assignments', 'Mid-term Exam', 'Final Project'],
+                    datasets: [{
+                        label: 'Performance Score',
+                        data: [data.assignments, data.midterm, data.finalProject],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.7)', 
+                            'rgba(255, 159, 64, 0.7)', 
+                            'rgba(255, 205, 86, 0.7)'  
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(255, 159, 64, 1)',
+                            'rgba(255, 205, 86, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: { 
+                            max: maxScale, 
+                            min: 0,
+                            ticks: { 
+                                stepSize: 200 
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: context => `${context.label}: ${context.raw}`
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- NEW COURSE PROCESSING FUNCTION ---
+        function addNewCourse(event) {
+            event.preventDefault();
+
+            const courseName = document.getElementById('courseName').value.trim();
+            const assignments = parseInt(document.getElementById('assignmentsScore').value);
+            const midterm = parseInt(document.getElementById('midtermScore').value);
+            const finalProject = parseInt(document.getElementById('finalScore').value);
+            
+            if (!courseName) {
+                alert("Please enter a course name.");
+                return;
+            }
+
+            const courseKey = courseName.replace(/\s/g, '').toLowerCase();
+            const canvasId = courseKey + 'Chart';
+
+            courseData[courseKey] = { assignments, midterm, finalProject };
+
+            // 1. Build the new HTML card element
+            const newCardHTML = `
+                <div class="performance-card">
+                    <h3>${courseName}</h3>
+                    <div class="chart-container">
+                        <canvas id="${canvasId}"></canvas>
+                    </div>
+                    <div class="chart-legend">
+                        <p><span class="legend-color" style="background-color: #FF6384;"></span><strong>A:</strong> Assignments</p>
+                        <p><span class="legend-color" style="background-color: #FF9F40;"></span><strong>B:</strong> Mid-term Exam</p>
+                        <p><span class="legend-color" style="background-color: #FFCD56;"></span><strong>C:</strong> Final Project</p>
+                    </div>
+                </div>
+            `;
+            
+            // 2. Append the new card to the grid
+            document.getElementById('performanceGrid').insertAdjacentHTML('beforeend', newCardHTML);
+
+            // 3. Draw the chart for the new course
+            setTimeout(() => {
+                createCourseChart(canvasId, courseData[courseKey]);
+            }, 50);
+
+            // 4. Close the modal
+            closeModal();
+        }
+
+
+        // --- INITIALIZATION (Runs on page load) ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Attach event listeners for the button and form
+            document.getElementById('addCourseBtn').addEventListener('click', showModal);
+            document.getElementById('newCourseForm').addEventListener('submit', addNewCourse);
+
+            // *** FIX: Draw the initial four charts using the sample data ***
+            createCourseChart('angularChart', courseData.angular);
+            createCourseChart('advanceJavaChart', courseData.advanceJava);
+            createCourseChart('productDevChart', courseData.productDev);
+            createCourseChart('springBootChart', courseData.springBoot);
+        });
+    </script>
+
+</body>
+</html>

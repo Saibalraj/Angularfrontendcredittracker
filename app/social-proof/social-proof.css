@@ -1,0 +1,62 @@
+.social-proof {
+  background-color: #d2e3f7;
+  color: var(--white-color);
+  text-align: center;
+}
+
+.social-proof h2, .social-proof p {
+  color: var(--white-color);
+}
+
+.social-proof p {
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.proof-stats {
+  display: flex;
+  justify-content: center;
+  gap: 4rem;
+  margin: 3rem 0;
+}
+
+.stat-number {
+  font-size: 3rem;
+  font-weight: 700;
+  display: block;
+}
+
+.stat-label {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.proof-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.btn-lg {
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+}
+
+.proof-actions .btn-secondary {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+  color: var(--white-color);
+}
+
+.proof-actions .btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.guarantees {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  opacity: 0.8;
+}

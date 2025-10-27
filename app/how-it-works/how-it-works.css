@@ -1,0 +1,219 @@
+/* --- MAIN SECTION STYLING --- */
+.how-it-works {
+  background-color: #f8faff; /* Very light blue background */
+  padding: 10rem 0;
+}
+
+/* Title and Subtitle (unchanged) */
+.how-it-works h2 {
+  text-align: center;
+  color: #1f2937;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+.how-it-works .subtitle {
+  text-align: center;
+  max-width: 600px;
+  margin: 1rem auto 3rem auto; /* Adjusted bottom margin */
+  color: #6b7280;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+
+/* --- NEW: THE MAIN WHITE WRAPPER CARD --- */
+.steps-wrapper {
+  background-color: #ffffff; /* White background */
+  border-radius: 16px; /* Slightly larger radius */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07); /* Softer shadow */
+  padding: 4rem 3rem 3rem; /* Generous padding */
+  position: relative;
+  overflow: hidden; /* To contain decorative circles */
+}
+.deco-circle {
+  position: absolute;
+  border-radius: 50%;
+  z-index: 0;
+  opacity: 0.5;
+}
+
+.circle-blue {
+  width: 150px;
+  height: 150px;
+  background-color: #85b7f3;
+  top: 50px;
+  right: 15%;
+}
+
+.circle-orange {
+  width: 200px;
+  height: 200px;
+  background-color: #f5cf9c;
+  bottom: -100px;
+  left: 5%;
+}
+
+/* --- STEPS CONTAINER (Inside the white card) --- */
+.steps-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  position: relative;
+  padding: 0 5%;
+}
+
+/* Connector lines - now solid grey to look good on the white background */
+.steps-container::before,
+.steps-container::after {
+  content: '';
+  position: absolute;
+  top: 40px;
+  height: 2px;
+  background-color: #e5e7eb; /* Solid light grey */
+  z-index: 0;
+}
+.steps-container::before {
+  left: 16.66%;
+  width: calc(33.33% - 2rem);
+}
+.steps-container::after {
+  left: 50%;
+  width: calc(33.33% - 2rem);
+}
+
+
+/* --- Individual Step Styling (Inside the white card) --- */
+.step {
+  flex: 1;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+.step-icon-wrapper {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1.5rem auto;
+  border-radius: 50%;
+  background-color: #eaf2ff; /* Very light blue for the circle */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 0 0 10px rgba(255, 255, 255, 0.8); /* Faint white ring */
+}
+.step-icon-wrapper i {
+  font-size: 2.2rem;
+}
+.step:nth-child(1) .step-icon-wrapper i { color: #3b82f6; }
+.step:nth-child(2) .step-icon-wrapper i { color: #10b981; }
+.step:nth-child(3) .step-icon-wrapper i { color: #f97316; }
+
+/* Numbered Badge - border changed to white */
+.step-icon {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: #ffffff;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #ffffff; /* IMPORTANT: Border is now white */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.step-icon.blue-icon { background-color: #3b82f6; }
+.step-icon.green-icon { background-color: #10b981; }
+.step-icon.orange-icon { background-color: #f97316; }
+
+/* Step text content */
+.step h3 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.8rem;
+  color: #1f2937;
+  font-size: 1.25rem;
+}
+.step p {
+  color: #6b7280;
+  max-width: 300px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+
+/* --- CTA CONTENT (Inside the white card) --- */
+.cta-content {
+  text-align: center;
+  margin-top: 5rem; /* Space between steps and CTA */
+  padding-top: 3rem; /* More space */
+  border-top: 3px solid #f5cf9c; /* Faint separator line */
+}
+
+.cta-content h3 {
+  font-size: 1.8rem;
+  color: #1f2937;
+  margin-bottom: 0.75rem;
+}
+.cta-content p {
+  font-size: 1.1rem;
+  color: #6e7e9e;
+  max-width: 600px;
+  margin: 0 auto 2rem auto;
+  line-height: 1.6;
+}
+/* Container for the buttons to align them */
+.button-container {
+  display: flex;
+  justify-content: center; /* Or 'flex-start' if you want them left-aligned */
+  gap: 1rem; /* Space between the buttons */
+}
+
+/* --- Base Button Styles (for both buttons) --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem; /* Space between icon and text */
+  padding: 0.8rem 1.8rem; /* Vertical and horizontal padding */
+  border-radius: 8px; /* Rounded corners */
+  font-size: 1rem;
+  font-weight: 600; /* Semi-bold text */
+  text-decoration: none; /* Removes underline from the link */
+  cursor: pointer;
+  transition: all 0.2s ease-in-out; /* Smooth hover transition */
+  border: 1px solid transparent; /* Base border */
+}
+
+/* --- Primary Button (Blue) --- */
+.btn-primary {
+  background-color: #3b82f6; /* Primary blue color */
+  color: #ffffff; /* White text */
+  /* Subtle shadow matching the button color for a "glow" effect */
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+}
+
+.btn-primary:hover {
+  background-color: #2563eb; /* Darker blue on hover */
+  transform: translateY(-2px); /* Slight lift effect on hover */
+  box-shadow: 0 6px 15px rgba(59, 130, 246, 0.3);
+}
+
+
+/* --- Secondary Button (White with Border) --- */
+.btn-secondary {
+  background-color: #ffffff; /* White background */
+  color: #4b5563; /* Medium-dark grey text */
+  border: 1px solid #d1d5db; /* Light grey border */
+}
+
+.btn-secondary:hover {
+  background-color: #f9fafb; /* Very light grey on hover */
+  border-color: #9ca3af; /* Slightly darker border on hover */
+  color: #1f2937; /* Darker text on hover */
+  transform: translateY(-2px); /* Slight lift effect on hover */
+}
+
+/* Ensure you have Font Awesome linked in your HTML <head> for the icons */
+/* <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" /> */
+/* Button styles (.btn-cta-primary, .btn-cta-secondary) remain the same */

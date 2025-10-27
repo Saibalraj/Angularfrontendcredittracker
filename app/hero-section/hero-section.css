@@ -1,0 +1,182 @@
+.hero {
+  /* Setting a base background color */
+  background-color: #bfd8f1;
+  padding: 5rem 0 8rem 0; /* Increased bottom padding */
+  position: relative;
+  overflow: hidden; /* Hide parts of pseudo-elements that go outside */
+}
+
+/* This pseudo-element creates the angled light blue background */
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 90%;
+  background-color: #dbeafa; /* Very light blue/grey */
+  z-index: 0;
+  transform: skewY(-4deg); /* This creates the angle */
+  transform-origin: top left;
+}
+
+/* Decorative circles styling */
+.deco-circle {
+  position: absolute;
+  border-radius: 50%;
+  z-index: 0;
+  opacity: 0.5;
+}
+
+.circle-blue {
+  width: 150px;
+  height: 150px;
+  background-color: #9cc0ec;
+  top: 50px;
+  right: 15%;
+}
+
+.circle-orange {
+  width: 200px;
+  height: 200px;
+  background-color: #f5cf9c;
+  bottom: -100px;
+  left: 5%;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+  
+  max-width: 1200px; /* Or your preferred max-width */
+  margin: 0 auto; /* Center the content */
+  padding: 0 2rem; /* Add horizontal padding */
+}
+
+.hero-text {
+  flex: 1;
+}
+
+.hero-text h1 {
+  margin-bottom: 1rem;
+}
+
+.highlight {
+  color: var(--primary-color);
+}
+
+.stats {
+  display: flex;
+  gap: 2rem;
+  margin-top: 3rem; /* Adjusted margin */
+}
+
+.stats div {
+  font-size: 0.9rem;
+  color: #244c9c;
+}
+
+.stats strong {
+  display: block;
+  font-size: 1.5rem;
+  color: var(--dark-color);
+}
+/* 
+.hero-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+} */
+
+
+/* Import Font Awesome for the icons */
+/* Add this to the <head> of your HTML file: */
+/* <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"> */
+
+/* Main container for the buttons */
+.hero-buttons {
+  display: flex; /* Aligns buttons in a row */
+  align-items: center; /* Vertically centers the buttons */
+  gap: 1rem; /* Creates space between the buttons (e.g., 16px) */
+}
+
+/* Base styles for ALL buttons */
+.btn {
+  display: inline-flex; /* Helps align text and icon properly */
+  align-items: center;
+  gap: 0.5rem; /* Space between icon and text (e.g., 8px) */
+  padding: 0.8rem 1.5rem; /* Vertical and horizontal padding */
+  border-radius: 8px; /* Creates the rounded corners */
+  border: 1px solid transparent; /* Base border, made transparent */
+  font-size: 1rem; /* Adjust font size as needed */
+  font-weight: 600; /* Makes the font semi-bold */
+  text-decoration: none; /* Removes the default link underline */
+  cursor: pointer;
+  transition: all 0.2s ease-in-out; /* Smooth transition for hover effects */
+}
+
+/* --- Primary Button (Blue) --- */
+.btn-primary {
+  background-color: #3b82f6; /* A nice shade of blue */
+  color: #ffffff; /* White text */
+}
+
+/* Hover effect for the primary button */
+.btn-primary:hover {
+  background-color: #2563eb; /* A slightly darker blue on hover */
+}
+
+
+/* --- Secondary Button (Light Grey) --- */
+.btn-secondary {
+  background-color: #f3f4f6; /* Light grey background */
+  color: #1f2937; /* Dark grey text */
+  border: 1px solid #e5e7eb; /* Subtle light grey border */
+}
+
+/* Hover effect for the secondary button */
+.btn-secondary:hover {
+  background-color: #e5e7eb; /* A slightly darker grey on hover */
+  border-color: #d1d5db;
+}
+
+
+
+
+.hero-image {
+  flex: 1;
+  position: relative;
+  text-align: center;
+}
+
+.hero-image img {
+  max-width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.badge {
+  position: absolute;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.badge-yellow {
+  background-color: #f59e0b;
+  color: var(--white-color);
+  top: 20px;
+  right: 20px;
+}
+
+.badge-green {
+  background-color: var(--secondary-color);
+  color: var(--white-color);
+  bottom: 20px;
+  left: 20px;
+}

@@ -1,0 +1,306 @@
+Apply a nice font and background to the whole page
+.dashboard-body {
+    background-color: #f8faff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    color: #1f2937;
+}
+
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* --- Sidebar Styling --- */
+.sidebar {
+    width: 260px;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #e5e7eb;
+}
+
+.sidebar-header {
+    padding: 1.5rem;
+    font-size: 1.25rem;
+    color: #1f2937;
+    border-bottom: 1px solid #e5e7eb;
+}
+.sidebar-header i {
+    color: #3b82f6;
+    margin-right: 0.5rem;
+}
+
+.sidebar-nav {
+    flex-grow: 1; /* Pushes the footer down */
+    padding: 1rem 0;
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-nav a {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 1.5rem;
+    margin: 0.25rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #4b5563;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.sidebar-nav a:hover {
+    background-color: #f3f4f6;
+    color: #1f2937;
+}
+
+.sidebar-nav a.active {
+    background-color: #e0e7ff; /* Light blue */
+    color: #3b82f6; /* Primary blue */
+}
+
+.sidebar-nav a i {
+    width: 20px; /* Aligns text neatly */
+}
+
+.sidebar-footer {
+    border-top: 1px solid #e5e7eb;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.user-profile img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.user-profile strong {
+    display: block;
+    font-size: 0.9rem;
+}
+
+.user-profile span {
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+.logout-btn {
+    color: #6b7280;
+    padding: 0.5rem;
+    border-radius: 6px;
+}
+.logout-btn:hover {
+    background-color: #f3f4f6;
+}
+
+.main-content {
+    flex: 1;
+    padding: 2rem 3rem;
+    overflow-y: auto; 
+}
+
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+}
+
+.main-header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+}
+
+.main-header p {
+    margin: 0;
+    color: #6b7280;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.header-actions .btn-primary {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+}
+
+.btn-icon {
+    border: 1px solid #e5e7eb;
+    background-color: #ffffff;
+    color: #6b7280;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+/* --- Stat Cards Grid --- */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.stat-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border: 1px solid #e5e7eb;
+}
+
+.card-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.card-icon.blue { background-color: #e0e7ff; color: #3b82f6; }
+.card-icon.green { background-color: #d1fae5; color: #10b981; }
+.card-icon.orange { background-color: #ffedd5; color: #f97316; }
+
+.card-content span {
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.card-content strong {
+    display: block;
+    font-size: 1.75rem;
+    color: #1f2937;
+}
+
+/* --- Courses Table --- */
+.courses-section h2 {
+    margin-bottom: 1.5rem;
+}
+
+.table-wrapper {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 1rem;
+    border: 1px solid #e5e7eb;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 1rem;
+    text-align: left;
+}
+
+thead {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+th {
+    color: #6b7280;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+tbody tr {
+    border-bottom: 1px solid #f3f4f6;
+}
+
+tbody tr:last-child {
+    border-bottom: none;
+}
+
+/* Status Pills */
+.status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.status.in-progress {
+    background-color: #ffedd5;
+    color: #9a3412;
+}
+.status.completed {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+/* --- Styling for the new Performance Breakdown section --- */
+
+.performance-section {
+    margin-top: 2rem;
+}
+
+.performance-grid {
+    display: grid;
+    /* Creates a responsive grid that fits as many cards as possible */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem; /* Space between cards */
+}
+
+.performance-card {
+    background-color: #ffffff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    transition: transform 0.2s ease-in-out;
+}
+
+.performance-card:hover {
+    transform: translateY(-5px); /* Adds a subtle lift effect on hover */
+}
+
+.performance-card h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: #333;
+    font-size: 1.2rem;
+}
+
+.performance-card img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px; /* Optional: rounds the image corners */
+}
+
+.chart-legend {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: #555;
+    text-align: left;
+    display: inline-block;
+}
+
+.chart-legend p {
+    margin: 0.3rem 0;
+}
