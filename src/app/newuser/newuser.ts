@@ -13,23 +13,21 @@ import { AuthService, Student } from '../services/auth.service';
 })
 export class NewuserComponent {
   student: Student = {
-    rollNo: 0,
-    name: '',
+    username: '',
     program: '',
     requiredCredits: 0,
-    password: ''
+    password: '',
+    rollNo: 0,
+    name: ''
   };
 
-  confirmPassword: string = '';
-  termsAccepted: boolean = false;
-  message: string = '';
+  confirmPassword = '';
+  termsAccepted = false;
+  message = '';
   messageType: 'success' | 'error' | '' = '';
-  isLoading: boolean = false;
+  isLoading = false;
 
-  constructor(
-    private router: Router,
-    private authService: AuthService
-  ) {}
+  constructor(private router: Router, private authService: AuthService) {}
 
   passwordsMatch(): boolean {
     return this.student.password === this.confirmPassword;
@@ -44,7 +42,7 @@ export class NewuserComponent {
         return;
       }
 
-      if ((this.student.password?.length ?? 0) < 6) {
+   if ((this.student.password?.length || 0) < 6) {
   this.showMessage('Password must be at least 6 characters long!', 'error');
   return;
 }
@@ -52,65 +50,52 @@ export class NewuserComponent {
       this.isLoading = true;
 
       this.authService.register(this.student).subscribe({
-        next: (response) => {
+        next: () => {
           this.isLoading = false;
-          console.log('Registration successful:', response);
-
           localStorage.setItem('registrationSuccess', 'true');
-          localStorage.setItem('registeredName', this.student.name);
-
-          this.showMessage('Registration successful! Redirecting to login...', 'success');
-
-          setTimeout(() => {
-            this.router.navigate(['/login']);
-          }, 2000);
+          localStorage.setItem('registeredUsername', this.student.username);
+          this.showMessage('Registration successful! Redirecting...', 'success');
+          setTimeout(() => this.router.navigate(['/login']), 2000);
         },
         error: (error) => {
           this.isLoading = false;
-          const errorMessage = error.error?.message || 'Registration failed! Please try again.';
-          this.showMessage(errorMessage, 'error');
+          const errorMsg = error.error?.message || 'Registration failed! Please try again.';
+          this.showMessage(errorMsg, 'error');
         }
       });
     } else {
-      this.showMessage('Please fill in all required fields correctly and accept the terms!', 'error');
+      this.showMessage('Please fill all fields and accept the terms!', 'error');
     }
   }
 
-  showMessage(text: string, type: 'success' | 'error') {
-    this.message = text;
+  showMessage(msg: string, type: 'success' | 'error') {
+    this.message = msg;
     this.messageType = type;
-
     setTimeout(() => {
-      if (this.message === text) {
+      if (this.message === msg) {
         this.message = '';
         this.messageType = '';
       }
     }, 5000);
   }
 
-  allowOnlyNumbers(event: KeyboardEvent) {
-    const pattern = /^[0-9]*$/;
-    const inputChar = String.fromCharCode(event.charCode);
-    if (!pattern.test(inputChar)) event.preventDefault();
-  }
-
-  resetForm(form?: NgForm) {
-    this.student = {
-      rollNo: 0,
-      name: '',
-      program: '',
-      requiredCredits: 0,
-      password: ''
-    };
-    this.confirmPassword = '';
-    this.termsAccepted = false;
-    this.message = '';
-    this.messageType = '';
-    form?.resetForm();
-  }
+ resetForm(form?: NgForm) {
+  this.student = {
+    username: '',
+    program: '',
+    requiredCredits: 0,
+    password: '',
+    rollNo: 0,
+    name: ''
+  };
+  this.confirmPassword = '';
+  this.termsAccepted = false;
+  this.message = '';
+  this.messageType = '';
+  form?.resetForm();
+}
 
   goToLogin() {
     this.router.navigate(['/login']);
   }
-  
 }

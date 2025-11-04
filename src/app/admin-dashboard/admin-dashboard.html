@@ -1,0 +1,156 @@
+<div class="admin-dashboard">
+  <h2>Admin Dashboard</h2>
+</div>
+
+<div class="dashboard-container">
+  <h3>Courses & Subjects</h3>
+  <div class="course-management">
+    <div class="add-course">
+      <input placeholder="Course ID" [(ngModel)]="newCourseId" />
+      <input placeholder="Course Name" [(ngModel)]="newCourseName" />
+      <button (click)="addCourse()">Add Course</button>
+    </div>
+  </div>
+
+  <div class="controls">
+    <label>Course
+      <select [(ngModel)]="selectedCourseId" (change)="refresh()">
+        <option *ngFor="let c of courses" [value]="c.id">{{c.name}}</option>
+      </select>
+      <button *ngIf="selectedCourseId" class="remove-course" (click)="removeCourse()">Remove Course</button>
+    </label>
+    <label>Semester
+      <select [(ngModel)]="selectedSemesterId" (change)="refresh()">
+        <option *ngFor="let s of [1,2,3,4,5,6]" [value]="s">{{s}}</option>
+      </select>
+    </label>
+    <label>Subject
+      <select [(ngModel)]="selectedSubjectName" (change)="refresh()">
+        <option value="">All Subjects</option>
+        <option *ngFor="let sub of subjectOptions" [value]="sub.name">{{sub.name}}</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="course-subjects">
+    <div class="subjects-header">
+      <h4>Subjects for {{selectedCourseId}} - Sem {{selectedSemesterId}}</h4>
+      <div class="subject-actions">
+        <button class="outline" (click)="exportSubjectsCsv()">Export Excel</button>
+        <label class="outline btn-like">
+          Import Excel
+          <input type="file" accept=".xlsx,.xls" (change)="importSubjectsFromExcel($event)" style="display:none">
+        </label>
+      </div>
+    </div>
+
+    <ul class="subjects-list">
+      <li *ngFor="let sub of getCurrentSubjects()">
+        <div class="subject-item">
+          <span class="subject-info">{{sub.name}}
+            <span class="credits">({{sub.credits}} credits)</span>
+            <span *ngIf="sub.isElective" class="elective-badge">Elective</span>
+          </span>
+          <button class="remove" (click)="removeSubject(sub.id)">Remove</button>
+        </div>
+      </li>
+    </ul>
+
+    <div class="credit-info">
+      <p>Semester Credits: {{ getSemesterCredits(selectedCourseId, selectedSemesterId) }} / 36
+        <span *ngIf="isSemesterFull(selectedCourseId, selectedSemesterId)" class="status full">(your credit is full)</span>
+        <span *ngIf="!isSemesterFull(selectedCourseId, selectedSemesterId)" class="status not-full">(your credit is not full)</span>
+      </p>
+      <p>Course Total Credits: {{ getCourseTotalCredits(selectedCourseId) }} / 216
+        <span *ngIf="isCourseFull(selectedCourseId)" class="status full">(course credits are full)</span>
+      </p>
+    </div>
+
+    <div class="add-subject">
+      <input placeholder="Subject name" [(ngModel)]="newSubjectName" />
+      <input type="number" placeholder="Credits" [(ngModel)]="newSubjectCredits" />
+      <button (click)="addSubject()">Add Subject</button>
+    </div>
+  </div>
+
+  <h3>Student Applications</h3>
+  <div class="registered-students-section">
+    <h4>Registered Students for {{selectedCourseId || 'All Courses'}}</h4>
+    <div *ngIf="getStudentsForSelectedCourse().length === 0">No registered students for this course.</div>
+    <table *ngIf="getStudentsForSelectedCourse().length > 0" class="applications-table">
+      <thead>
+        <tr>
+          <th>Roll No</th>
+          <th>Name</th>
+          <th>Program</th>
+          <th>Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let s of getStudentsForSelectedCourse()">
+          <td>{{s.rollNo}}</td>
+          <td>{{s.name}}</td>
+          <td>{{s.program}}</td>
+          <td><button (click)="viewStudentDetails(s)">View</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="app-actions">
+    <div>
+      <button class="primary" (click)="approveSelected()">Approve Selected</button>
+      <button (click)="rejectSelected()">Reject Selected</button>
+    </div>
+
+  </div>
+  <table class="applications-table">
+    <thead>
+      <tr>
+        <th><input type="checkbox" (change)="selectAll($event.target.checked)" /></th>
+        <th>Roll No</th>
+        <th>Name</th>
+        <th>Program</th>
+        <th>Password</th>
+        <th>Course</th>
+        <th>Sem</th>
+        <th>Subject</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let a of getFilteredApplications()">
+        <td><input type="checkbox" (change)="toggleSelection(a.id, $event.target.checked)" [checked]="selectedAppIds.has(a.id)" /></td>
+        <td>{{a.studentRoll}}</td>
+        <td>{{a.studentName || (a.studentRoll + '')}}</td>
+        <td>{{a['studentProgram'] || ''}}</td>
+        <td>
+          <span>{{a['studentPassword'] ? a['studentPassword'] : '—'}}</span>
+          <button class="small" (click)="editPassword(a.studentRoll)">Edit</button>
+        </td>
+        <td>{{a.courseId}}</td>
+        <td>{{a.semesterId}}</td>
+  <td>{{a.subject.name}}</td>
+        <td>{{a.status}}</td>
+        <td>
+          <button *ngIf="a.status==='pending'" (click)="approve(a)">Approve</button>
+          <button *ngIf="a.status==='pending'" (click)="reject(a)">Reject</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="actions">
+    <button (click)="logout()">Logout</button>
+  </div>
+</div>
+
+<!-- toast component -->
+<app-toast></app-toast>
+
+<!-- Student details modal -->
+<app-student-details-modal
+  [isOpen]="isModalOpen"
+  [student]="selectedStudent"
+  (closeModal)="closeModal()"
+></app-student-details-modal>

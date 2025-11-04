@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { Observable } from 'rxjs';
+
 
 @Component({
   selector: 'app-root',
@@ -37,11 +39,10 @@ export class AppComponent implements OnInit {
     });
   }
 
-  adddata() {
+  addStudent() {
     this.http.post("http://localhost:8084/api/student", this.userdata).subscribe((result) => {
       console.log('Student added:', result);
-      this.getdata(); // Refresh the list
-      this.resetForm();
+      this.addStudent();
     });
   }
 
@@ -59,6 +60,11 @@ export class AppComponent implements OnInit {
       this.resetForm();
     });
   }
+
+
+  login(username: string, password: string): Observable<any> {
+  return this.http.post('http://localhost:8084/auth/login', { username, password });
+}
 
   editStudent(student: any) {
     this.userdata = { ...student };

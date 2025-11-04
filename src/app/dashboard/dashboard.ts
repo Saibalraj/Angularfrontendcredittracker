@@ -1,300 +1,226 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-interface Subject {
-  id: number;
-  name: string;
-  credits: number;
-  grade: number;
-}
-
-interface Semester {
-  id: number;
-  subjects: Subject[];
-  totalCredits: number;
-}
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AdminService, SubjectApplication } from '../services/admin.service';
+import { Course, Subject as CourseSubject } from '../models/course.model';
+import { ToastService } from '../shared/toast.service';
+import { ToastComponent } from '../shared/toast.component';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule, ToastComponent],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css']
 })
-export class DashboardComponent implements OnInit {
-  // Student Information
-  studentName: string = 'Sai Balraj';
-  enrolledCourses: number = 8;
-  profileIncomplete: boolean = true;
+export class DashboardComponent implements OnInit, OnDestroy {
+  studentName = 'Student';
+  studentProfile: any = {};
+  adminCourses: Course[] = [];
+  selectedAdminCourseId: string = '';
+  selectedAdminSemesterId: number = 1;
+  showPassword: boolean = false;
 
-  // Academic Data
-  semesterData: Semester[] = [
-    {
-      id: 1,
-      totalCredits: 22,
-      subjects: [
-        { id: 1, name: 'Mathematics I', credits: 4, grade: 78 },
-        { id: 2, name: 'Physics', credits: 4, grade: 82 },
-        { id: 3, name: 'Programming Fundamentals', credits: 3, grade: 85 },
-        { id: 4, name: 'English Communication', credits: 2, grade: 75 },
-        { id: 5, name: 'Engineering Drawing', credits: 3, grade: 70 },
-        { id: 6, name: 'Chemistry', credits: 4, grade: 80 }
-      ]
-    },
-    {
-      id: 2,
-      totalCredits: 24,
-      subjects: [
-        { id: 1, name: 'Mathematics II', credits: 4, grade: 82 },
-        { id: 2, name: 'Data Structures', credits: 4, grade: 88 },
-        { id: 3, name: 'Digital Electronics', credits: 3, grade: 76 },
-        { id: 4, name: 'Mechanics', credits: 4, grade: 84 },
-        { id: 5, name: 'Environmental Science', credits: 2, grade: 90 },
-        { id: 6, name: 'Economics', credits: 3, grade: 78 },
-        { id: 7, name: 'Lab: Programming', credits: 2, grade: 92 }
-      ]
-    },
-    {
-      id: 3,
-      totalCredits: 20,
-      subjects: [
-        { id: 1, name: 'Algorithms', credits: 4, grade: 75 },
-        { id: 2, name: 'Database Systems', credits: 4, grade: 82 },
-        { id: 3, name: 'Computer Networks', credits: 3, grade: 78 },
-        { id: 4, name: 'Operating Systems', credits: 4, grade: 80 },
-        { id: 5, name: 'Software Engineering', credits: 3, grade: 85 }
-      ]
-    },
-    {
-      id: 4,
-      totalCredits: 26,
-      subjects: [
-        { id: 1, name: 'Machine Learning', credits: 4, grade: 89 },
-        { id: 2, name: 'Web Development', credits: 4, grade: 92 },
-        { id: 3, name: 'Mobile App Development', credits: 3, grade: 85 },
-        { id: 4, name: 'Cloud Computing', credits: 4, grade: 88 },
-        { id: 5, name: 'Project Management', credits: 3, grade: 82 },
-        { id: 6, name: 'Elective I', credits: 4, grade: 90 },
-        { id: 7, name: 'Lab: Web Technologies', credits: 2, grade: 94 }
-      ]
-    },
-    {
-      id: 5,
-      totalCredits: 24,
-      subjects: [
-        { id: 1, name: 'Artificial Intelligence', credits: 4, grade: 87 },
-        { id: 2, name: 'Cybersecurity', credits: 4, grade: 85 },
-        { id: 3, name: 'Big Data Analytics', credits: 3, grade: 82 },
-        { id: 4, name: 'Internet of Things', credits: 4, grade: 88 },
-        { id: 5, name: 'Elective II', credits: 4, grade: 84 },
-        { id: 6, name: 'Project Work', credits: 5, grade: 90 }
-      ]
-    },
-    {
-      id: 6,
-      totalCredits: 22,
-      subjects: [
-        { id: 1, name: 'Deep Learning', credits: 4, grade: 86 },
-        { id: 2, name: 'Blockchain Technology', credits: 4, grade: 83 },
-        { id: 3, name: 'Elective III', credits: 4, grade: 85 },
-        { id: 4, name: 'Elective IV', credits: 4, grade: 87 },
-        { id: 5, name: 'Internship', credits: 6, grade: 88 }
-      ]
+  private pollHandle: any = null;
+  private notifiedAppIds = new Set<string>();
+
+  constructor(private router: Router, private adminService: AdminService, private toast: ToastService) {}
+
+  ngOnInit(): void {
+    this.loadUserFromStorage();
+    this.adminCourses = this.adminService.getCourses() || [];
+    // if student has program, select matching course
+    if (this.studentProfile.program) {
+      const normalized = String(this.studentProfile.program || '').replace(/[^a-z0-9]/gi, '').toLowerCase();
+      const found = this.adminCourses.find(c => String(c.name || '').replace(/[^a-z0-9]/gi, '').toLowerCase() === normalized);
+      if (found) this.selectedAdminCourseId = found.id;
     }
-  ];
+    if (!this.selectedAdminCourseId && this.adminCourses.length) this.selectedAdminCourseId = this.adminCourses[0].id;
 
-  // UI State
-  selectedSemester: number = 1;
-  currentSemesterPage: number = 0;
-  semestersPerPage: number = 4;
-  showNotification: boolean = false;
-  notificationMessage: string = '';
-  notificationType: string = 'success';
-
-  // Computed Properties
-  get totalSubjects(): number {
-    return this.semesterData.reduce((total, semester) => total + semester.subjects.length, 0);
+    // start polling applications to detect approvals
+    this.pollHandle = setInterval(() => this.checkApplications(), 3000);
   }
 
-  get totalCredits(): number {
-    return this.semesterData.reduce((total, semester) => total + semester.totalCredits, 0);
+  ngOnDestroy(): void {
+    if (this.pollHandle) clearInterval(this.pollHandle);
   }
 
-  get overallPercentage(): number {
-    const totalGradePoints = this.semesterData.reduce((total, semester) => {
-      return total + semester.subjects.reduce((semTotal, subject) => semTotal + subject.grade, 0);
-    }, 0);
-    return Math.round(totalGradePoints / this.totalSubjects);
+  private loadUserFromStorage() {
+    try {
+      const raw = localStorage.getItem('currentUser');
+      if (!raw) return;
+      const u = JSON.parse(raw);
+      this.studentProfile = u || {};
+      this.studentName = u?.name || u?.username || 'Student';
+    } catch (e) { console.warn(e); }
   }
 
-  get displayedSemesters(): Semester[] {
-    const start = this.currentSemesterPage * this.semestersPerPage;
-    return this.semesterData.slice(start, start + this.semestersPerPage);
+  getAdminCourseSubjects(courseId: string, semesterId: number): CourseSubject[] {
+    const c = this.adminCourses.find(x => x.id === courseId);
+    if (!c) return [];
+    const sem = c.semesters.find(s => s.id === Number(semesterId));
+    return sem ? (sem.subjects as CourseSubject[]) : [];
   }
 
-  get maxSemesterPage(): number {
-    return Math.ceil(this.semesterData.length / this.semestersPerPage) - 1;
-  }
+  applyForSubject(subject: CourseSubject) {
+    try {
+      const raw = localStorage.getItem('currentUser');
+      const user = raw ? JSON.parse(raw) : {};
+      const studentRoll = user?.rollNo ?? user?.id ?? user?.username ?? 'unknown';
+      const studentName = user?.name ?? user?.username ?? '';
 
-  constructor(private router: Router) {}
+      // Check if student already has a pending or approved application for this subject
+      const existingApps = this.adminService.getApplications() || [];
+      const hasExisting = existingApps.some(a =>
+        a.studentRoll === studentRoll &&
+        a.courseId === this.selectedAdminCourseId &&
+        a.semesterId === Number(this.selectedAdminSemesterId) &&
+        a.subject?.name === subject.name &&
+        (a.status === 'pending' || a.status === 'approved')
+      );
 
-  ngOnInit() {
-    // Auto-select first semester on load
-    this.selectedSemester = 1;
-    this.showNotificationMessage('Welcome to your dashboard!', 'success');
-  }
+      if (hasExisting) {
+        this.toast.show('You already have a pending or approved application for this subject', 'error');
+        return;
+      }
 
-  // Semester Navigation
-  selectSemester(semesterId: number) {
-    this.selectedSemester = semesterId;
-    this.showNotificationMessage(`Viewing Semester ${semesterId} details`, 'info');
-  }
-
-  previousSemesters() {
-    if (this.currentSemesterPage > 0) {
-      this.currentSemesterPage--;
-    }
-  }
-
-  nextSemesters() {
-    if (this.currentSemesterPage < this.maxSemesterPage) {
-      this.currentSemesterPage++;
-    }
-  }
-
-  // Data Getters
-  getSemesterSubjects(semesterId: number): Subject[] {
-    const semester = this.semesterData.find(s => s.id === semesterId);
-    return semester ? semester.subjects : [];
-  }
-
-  getSemesterPercentage(semesterId: number): number {
-    const semester = this.semesterData.find(s => s.id === semesterId);
-    if (!semester) return 0;
-
-    const totalGrade = semester.subjects.reduce((sum, subject) => sum + subject.grade, 0);
-    return Math.round(totalGrade / semester.subjects.length);
-  }
-
-  getSemesterCredits(semesterId: number): number {
-    const semester = this.semesterData.find(s => s.id === semesterId);
-    return semester ? semester.totalCredits : 0;
-  }
-
-  getSemesterGPA(semesterId: number): number {
-    const percentage = this.getSemesterPercentage(semesterId);
-    // Simple percentage to GPA conversion (scale: 4.0)
-    return Math.min(4.0, (percentage / 100) * 4);
-  }
-
-  // Grade Utilities
-  getGradeLetter(percentage: number): string {
-    if (percentage >= 90) return 'A+';
-    if (percentage >= 80) return 'A';
-    if (percentage >= 70) return 'B';
-    if (percentage >= 60) return 'C';
-    if (percentage >= 50) return 'D';
-    return 'F';
-  }
-
-  getGradeClass(percentage: number): string {
-    if (percentage >= 80) return 'excellent';
-    if (percentage >= 70) return 'good';
-    if (percentage >= 60) return 'average';
-    return 'poor';
-  }
-
-  // Navigation Functions - All properly linked to components
-  viewProfile() {
-    this.showNotificationMessage('Opening profile...', 'info');
-    setTimeout(() => {
-      this.router.navigate(['/profile']);
-    }, 1000);
-  }
-
-  viewCourses() {
-    this.showNotificationMessage('Loading courses...', 'info');
-    setTimeout(() => {
-      this.router.navigate(['/transcript']);
-    }, 1000);
-  }
-
-  openSettings() {
-    this.showNotificationMessage('Opening settings...', 'info');
-    setTimeout(() => {
-      this.router.navigate(['/settings']);
-    }, 1000);
-  }
-
-  exportGrades() {
-    this.showNotificationMessage('Exporting grade report...', 'success');
-    setTimeout(() => {
-      const data = {
-        studentName: this.studentName,
-        semesterData: this.semesterData,
-        overallPercentage: this.overallPercentage,
-        exportDate: new Date().toISOString()
+      const app: SubjectApplication = {
+        id: `app-${Date.now()}`,
+        studentRoll,
+        studentName,
+        courseId: this.selectedAdminCourseId,
+        semesterId: Number(this.selectedAdminSemesterId),
+        subject: { id: subject.id as any, name: subject.name, credits: (subject as any).credits || 0 },
+        status: 'pending'
       };
-
-      const dataStr = JSON.stringify(data, null, 2);
-      const dataBlob = new Blob([dataStr], { type: 'application/json' });
-      const url = URL.createObjectURL(dataBlob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `grades-${this.studentName.replace(' ', '-')}-${new Date().getTime()}.json`;
-      link.click();
-      URL.revokeObjectURL(url);
-    }, 2000);
+      this.adminService.applySubject(app);
+      this.toast.show('Application submitted', 'success');
+    } catch (e) { console.error(e); this.toast.show('Failed to apply', 'error'); }
   }
 
-  downloadTranscript() {
-    this.showNotificationMessage('Preparing transcript download...', 'success');
-    setTimeout(() => {
-      this.router.navigate(['/transcript']);
-    }, 1000);
+  getApplicationStatus(subject: CourseSubject): string | null {
+    const raw = localStorage.getItem('currentUser');
+    const user = raw ? JSON.parse(raw) : {};
+    const studentRoll = user?.rollNo ?? user?.id ?? user?.username ?? null;
+    if (!studentRoll) return null;
+    const apps = this.adminService.getApplications() || [];
+    const found = apps.find((a: any) => a.studentRoll == studentRoll && a.courseId === this.selectedAdminCourseId && a.semesterId === Number(this.selectedAdminSemesterId) && a.subject?.name === subject.name);
+    return found ? found.status : null;
   }
 
-  viewAttendance() {
-    this.showNotificationMessage('Loading attendance records...', 'info');
-    setTimeout(() => {
-      this.router.navigate(['/attendance']);
-    }, 1000);
-  }
-
-  contactAdvisor() {
-    this.showNotificationMessage('Opening advisor contact form...', 'info');
-    setTimeout(() => {
-      this.router.navigate(['/contact']);
-    }, 1000);
-  }
-
-  requestDocuments() {
-    this.showNotificationMessage('Opening document request form...', 'info');
-    setTimeout(() => {
-      this.router.navigate(['/request']);
-    }, 1000);
+  private checkApplications() {
+    const raw = localStorage.getItem('currentUser');
+    const user = raw ? JSON.parse(raw) : {};
+    const studentRoll = user?.rollNo ?? user?.id ?? user?.username ?? null;
+    if (!studentRoll) return;
+    const apps = this.adminService.getApplications() || [];
+    apps.forEach(a => {
+      if (a.studentRoll == studentRoll && a.status === 'approved' && !this.notifiedAppIds.has(a.id)) {
+        this.notifiedAppIds.add(a.id);
+        this.toast.show('Your subject has been approved by admin', 'success');
+      }
+      if (a.studentRoll == studentRoll && a.status === 'rejected' && !this.notifiedAppIds.has(a.id)) {
+        this.notifiedAppIds.add(a.id);
+        this.toast.show('Your subject application was rejected', 'info');
+      }
+    });
   }
 
   logout() {
-    this.showNotificationMessage('Logging out...', 'info');
-    setTimeout(() => {
-      this.router.navigate(['/login']);
-    }, 1000);
+    try {
+      localStorage.removeItem('currentUser');
+    } catch (e) { /* ignore */ }
+    this.toast.show('Logged out', 'info');
+    this.router.navigate(['/login']).catch(() => {});
   }
 
-  // Notification System
-  showNotificationMessage(message: string, type: string = 'info') {
-    this.notificationMessage = message;
-    this.notificationType = type;
-    this.showNotification = true;
+  refreshData() {
+    // Reload courses
+    this.adminCourses = this.adminService.getCourses() || [];
 
-    setTimeout(() => {
-      this.hideNotification();
-    }, 3000);
+    // Clear notifications cache to show new notifications
+    this.notifiedAppIds.clear();
+
+    // Force check for new applications
+    this.checkApplications();
+
+    // Reload user profile
+    this.loadUserFromStorage();
+
+    this.toast.show('Dashboard refreshed', 'success');
   }
 
-  hideNotification() {
-    this.showNotification = false;
+  exportMyApplications() {
+    const raw = localStorage.getItem('currentUser');
+    const user = raw ? JSON.parse(raw) : {};
+    const studentRoll = user?.rollNo ?? user?.id ?? user?.username ?? null;
+    if (!studentRoll) return;
+
+    const apps = (this.adminService.getApplications() || [])
+      .filter(a => a.studentRoll == studentRoll)
+      .map(a => ({
+        subject: a.subject?.name || '',
+        credits: a.subject?.credits || 0,
+        course: this.adminCourses.find(c => c.id === a.courseId)?.name || a.courseId,
+        semester: a.semesterId,
+        status: a.status,
+        appliedAt: a.id.split('-')[1] // timestamp part of the ID
+      }));
+
+    if (apps.length === 0) {
+      this.toast.show('No applications to export', 'info');
+      return;
+    }
+
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(apps);
+    XLSX.utils.book_append_sheet(wb, ws, 'My Applications');
+    XLSX.writeFile(wb, `my-applications-${Date.now()}.xlsx`);
+    this.toast.show('Excel file exported', 'success');
+  }
+
+  getSemesterCredits(courseId: string, semesterId: number): number {
+    const raw = localStorage.getItem('currentUser');
+    const user = raw ? JSON.parse(raw) : {};
+    const studentRoll = user?.rollNo ?? user?.id ?? user?.username ?? null;
+    if (!studentRoll) return 0;
+
+    const apps = this.adminService.getApplications() || [];
+    const semesterApps = apps.filter(a =>
+      a.studentRoll === studentRoll &&
+      a.courseId === courseId &&
+      a.semesterId === Number(semesterId) &&
+      a.status === 'approved'
+    );
+
+    return semesterApps.reduce((sum, app) => sum + (app.subject?.credits || 0), 0);
+  }
+
+  getMyApprovedApplications(courseId?: string, semesterId?: number): SubjectApplication[] {
+    const raw = localStorage.getItem('currentUser');
+    const user = raw ? JSON.parse(raw) : {};
+    const studentRoll = user?.rollNo ?? user?.id ?? user?.username ?? null;
+    if (!studentRoll) return [];
+
+    return (this.adminService.getApplications() || []).filter(a =>
+      a.studentRoll == studentRoll &&
+      a.status === 'approved' &&
+      (!courseId || a.courseId === courseId) &&
+      (!semesterId || a.semesterId === semesterId)
+    );
+  }
+
+  isSemesterFull(courseId: string, semesterId: number): boolean {
+    return this.getSemesterCredits(courseId, semesterId) >= 36;
+  }
+
+  getTotalCredits(): number {
+    return this.getMyApprovedApplications().reduce((sum, app) => sum + (app.subject?.credits || 0), 0);
+  }
+
+  isCourseFull(): boolean {
+    return this.getTotalCredits() >= 216;
   }
 }

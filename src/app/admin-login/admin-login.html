@@ -1,0 +1,61 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="header">
+      <h1>Admin Login</h1>
+    </div>
+
+    <form (ngSubmit)="login()" #loginForm="ngForm">
+      <div class="form-group">
+        <input
+          type="text"
+          name="username"
+          [(ngModel)]="username"
+          name="adminLoginUsername"
+          #usernameInput="ngModel"
+          placeholder="Username"
+          required
+          pattern="^[A-Za-z]+$"
+          [class.error]="usernameInput.invalid && (usernameInput.dirty || usernameInput.touched)"
+        />
+        <div *ngIf="usernameInput.invalid && (usernameInput.dirty || usernameInput.touched)" class="error-msg">
+          <span *ngIf="usernameInput.errors?.['required']">Username is required</span>
+          <span *ngIf="usernameInput.errors?.['pattern']">Username must contain letters only</span>
+        </div>
+      </div>
+
+      <div class="form-group password-container">
+        <input
+          [type]="showPassword ? 'text' : 'password'"
+          name="password"
+          [(ngModel)]="password"
+          #passwordInput="ngModel"
+          placeholder="Password"
+          required
+          [class.error]="passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)"
+        />
+        <app-eye-toggle [pressed]="showPassword" (toggleEvent)="togglePasswordVisibility()"></app-eye-toggle>
+        <div *ngIf="passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)" class="error-msg">
+          Password is required
+        </div>
+      </div>
+
+      <div *ngIf="message" [class]="'message ' + messageType">
+        {{ message }}
+      </div>
+
+      <button type="submit" class="login-button" [disabled]="isLoading || loginForm.invalid">
+        <span *ngIf="!isLoading">Login</span>
+        <span *ngIf="isLoading" class="loading">
+          <div class="spinner"></div>
+          Logging in...
+        </span>
+      </button>
+    </form>
+
+    <p class="separator">OR</p>
+    <p class="register-prompt">
+      Don't have an account?
+      <button type="button" class="sign-button" (click)="goToSignup()">Sign Up</button>
+    </p>
+  </div>
+</div>

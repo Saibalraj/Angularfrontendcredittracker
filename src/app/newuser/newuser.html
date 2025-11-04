@@ -1,157 +1,126 @@
+<div class="card">
+  <h2>Student Registration</h2>
 
-<div class="registration-container">
-  <div class="registration-card">
-    <div class="header">
-      <div class="logo">🎓</div>
-      <h1>Student Registration</h1>
-      <p class="subtitle">Create your student account</p>
+  <div *ngIf="message" class="message" [ngClass]="messageType === 'success' ? 'success-message' : 'error-message'">
+    <div class="message-content">
+      <span class="message-icon">{{ messageType === 'success' ? '✅' : '⚠️' }}</span>
+      <span class="message-text">{{ message }}</span>
+      <button class="close-btn" (click)="message = ''">&times;</button>
     </div>
+  </div>
 
-    <!-- Message Display -->
-    <div *ngIf="message" class="message" [ngClass]="messageType === 'success' ? 'success' : 'error'">
-      <div class="message-content">
-        <span class="message-icon">{{ messageType === 'success' ? '✅' : '⚠️' }}</span>
-        <span class="message-text">{{ message }}</span>
-        <button class="close-btn" (click)="message = ''">&times;</button>
-      </div>
-    </div>
-
-    <form #studentForm="ngForm" (ngSubmit)="onSubmit(studentForm)">
-      <div class="grid">
-        <div>
-          <label for="rollNo">Roll Number *</label>
-          <input
-            type="number"
-            id="rollNo"
-            name="rollNo"
-            [(ngModel)]="student.rollNo"
-            #rollNo="ngModel"
-            required
-            min="1"
-            placeholder="Enter roll number"
-            (keypress)="allowOnlyNumbers($event)"
-          />
-          <div *ngIf="rollNo.invalid && (rollNo.dirty || rollNo.touched)" class="error-msg">
-            Valid roll number is required
-          </div>
-        </div>
-
-        <div>
-          <label for="name">Full Name *</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            [(ngModel)]="student.name"
-            #name="ngModel"
-            required
-            placeholder="Enter full name"
-          />
-          <div *ngIf="name.invalid && (name.dirty || name.touched)" class="error-msg">
-            Full name is required
-          </div>
-        </div>
-
-        <div>
-          <label for="program">Program *</label>
-          <select
-            id="program"
-            name="program"
-            [(ngModel)]="student.program"
-            #program="ngModel"
-            required
-          >
-            <option value="">Select Program</option>
-            <option value="B.C.A">B.C.A</option>
-            <option value="M.C.A">M.C.A</option>
-            <option value="B.Tech">B.Tech</option>
-            <option value="M.Tech">M.Tech</option>
-            <option value="BBA">BBA</option>
-          </select>
-          <div *ngIf="program.invalid && (program.dirty || program.touched)" class="error-msg">
-            Program selection is required
-          </div>
-        </div>
-
-        <div>
-          <label for="requiredCredits">Required Credits *</label>
-          <input
-            type="number"
-            id="requiredCredits"
-            name="requiredCredits"
-            [(ngModel)]="student.requiredCredits"
-            #requiredCredits="ngModel"
-            required
-            min="0"
-            placeholder="e.g. 120"
-          />
-          <div *ngIf="requiredCredits.invalid && (requiredCredits.dirty || requiredCredits.touched)" class="error-msg">
-            Required credits is required
-          </div>
-        </div>
-
-        <div class="full">
-          <label for="password">Password *</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            [(ngModel)]="student.password"
-            #password="ngModel"
-            required
-            minlength="6"
-            placeholder="Create password (min. 6 characters)"
-          />
-          <div *ngIf="password.invalid && (password.dirty || password.touched)" class="error-msg">
-            Password must be at least 6 characters
-          </div>
-        </div>
-
-        <div class="full">
-          <label for="confirmPassword">Confirm Password *</label>
-          <input
-            type="password"
-            id="confirmPassword"
-            name="confirmPassword"
-            [(ngModel)]="confirmPassword"
-            #confirmPasswordInput="ngModel"
-            required
-            minlength="6"
-            placeholder="Re-enter password"
-          />
-          <div *ngIf="confirmPasswordInput.invalid && (confirmPasswordInput.dirty || confirmPasswordInput.touched)" class="error-msg">
-            Please confirm your password
-          </div>
-          <div *ngIf="!passwordsMatch() && confirmPassword" class="error-msg">
-            Passwords do not match
-          </div>
-        </div>
-
-        <div class="full terms">
-          <input type="checkbox" id="terms" name="terms" [(ngModel)]="termsAccepted" required/>
-          <label for="terms">I confirm the information is correct and agree to the terms *</label>
-          <div *ngIf="!termsAccepted && studentForm.submitted" class="error-msg">
-            You must accept the terms
-          </div>
+  <form #studentForm="ngForm" (ngSubmit)="onSubmit(studentForm)">
+    <div class="grid">
+      <div>
+        <label for="username">Username *</label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          [(ngModel)]="student.username"
+          #username="ngModel"
+          required
+          placeholder="Enter username"
+        />
+        <div *ngIf="username.invalid && (username.dirty || username.touched)" class="error-msg">
+          Username is required
         </div>
       </div>
 
-      <div class="btn-row">
-        <button type="button" (click)="resetForm(studentForm)" class="secondary" [disabled]="isLoading">
-          Reset
-        </button>
-        <button type="submit" [disabled]="!studentForm.valid || !termsAccepted || !passwordsMatch() || isLoading" class="primary">
-          <span *ngIf="!isLoading">Register</span>
-          <span *ngIf="isLoading" class="loading">
-            <div class="spinner"></div>
-            Registering...
-          </span>
-        </button>
+      <div>
+        <label for="program">Program *</label>
+        <select
+          id="program"
+          name="program"
+          [(ngModel)]="student.program"
+          #program="ngModel"
+          required
+        >
+          <option value="">Select Program</option>
+          <option value="B.C.A">B.Tech</option>
+          <option value="M.C.A">M.Tech</option>
+          <option value="B.Tech">B.Sc</option>
+          <option value="M.Tech">M.Sc</option>
+          <option value="BBA">BBA</option>
+        </select>
+        <div *ngIf="program.invalid && (program.dirty || program.touched)" class="error-msg">
+          Program selection is required
+        </div>
       </div>
-    </form>
 
-    <div class="login-link">
-      <p>Already have an account? <a (click)="goToLogin()">Login here</a></p>
+      <div>
+        <label for="requiredCredits">Required Credits *</label>
+        <input
+          type="number"
+          id="requiredCredits"
+          name="requiredCredits"
+          [(ngModel)]="student.requiredCredits"
+          #requiredCredits="ngModel"
+          required
+          min="0"
+          placeholder="e.g. 120"
+        />
+        <div *ngIf="requiredCredits.invalid && (requiredCredits.dirty || requiredCredits.touched)" class="error-msg">
+          Required credits is required
+        </div>
+      </div>
+
+      <div class="full">
+        <label for="password">Password *</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          [(ngModel)]="student.password"
+          #password="ngModel"
+          required
+          minlength="6"
+          placeholder="Create password (min. 6 characters)"
+        />
+        <div *ngIf="password.invalid && (password.dirty || password.touched)" class="error-msg">
+          Password must be at least 6 characters
+        </div>
+      </div>
+
+      <div class="full">
+        <label for="confirmPassword">Confirm Password *</label>
+        <input
+          type="password"
+          id="confirmPassword"
+          name="confirmPassword"
+          [(ngModel)]="confirmPassword"
+          #confirmPasswordInput="ngModel"
+          required
+          minlength="6"
+          placeholder="Re-enter password"
+        />
+        <div *ngIf="confirmPasswordInput.invalid && (confirmPasswordInput.dirty || confirmPasswordInput.touched)" class="error-msg">
+          Please confirm your password
+        </div>
+        <div *ngIf="!passwordsMatch() && confirmPassword" class="error-msg">
+          Passwords do not match
+        </div>
+      </div>
+
+      <div class="full terms">
+        <input type="checkbox" id="terms" name="terms" [(ngModel)]="termsAccepted" required/>
+        <label for="terms">I confirm the information is correct and agree to the terms *</label>
+        <div *ngIf="!termsAccepted && studentForm.submitted" class="error-msg">
+          You must accept the terms
+        </div>
+      </div>
     </div>
+
+    <div class="btn-row">
+      <button type="button" (click)="resetForm(studentForm)" class="secondary" [disabled]="isLoading">Reset</button>
+      <button type="submit" [disabled]="!studentForm.valid || !termsAccepted || !passwordsMatch() || isLoading" class="primary">
+        <span *ngIf="!isLoading">Register</span>
+        <span *ngIf="isLoading" class="loading"><div class="spinner"></div> Registering...</span>
+      </button>
+    </div>
+  </form>
+
+  <div class="login-link">
+    <p>Already have an account? <a (click)="goToLogin()">Login here</a></p>
+  </div>
 </div>
-

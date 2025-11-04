@@ -1,0 +1,80 @@
+<div class="courses-page">
+  <h2>Subject Registration</h2>
+
+  <div class="selector-row">
+    <label class="selector">
+      <span>Course</span>
+      <select [(ngModel)]="selectedCourseId" (change)="loadSemester()">
+        <option *ngFor="let c of courses" [value]="c.id">{{ c.name }}</option>
+      </select>
+    </label>
+
+    <label class="selector">
+      <span>Semester</span>
+      <select [(ngModel)]="selectedSemesterId" (change)="loadSemester()">
+        <option *ngFor="let s of [1,2,3,4,5,6]" [value]="s">Semester {{s}}</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="subjects-container">
+    <div class="available-subjects">
+      <h3>Available Subjects</h3>
+      <div class="subject-list">
+        <div *ngFor="let sub of availableSubjects" class="subject-item">
+          <div class="subject-info">
+            <strong class="subject-name">{{sub.name}}</strong>
+            <span class="subject-credits">{{sub.credits}} credits</span>
+          </div>
+          <button class="apply-btn" (click)="apply(sub)"
+            [disabled]="isSubjectApplied(sub.id)">
+            {{ isSubjectApplied(sub.id) ? 'Applied' : 'Apply' }}
+          </button>
+        </div>
+        <div *ngIf="availableSubjects.length === 0" class="empty-message">
+          No subjects available for this semester.
+        </div>
+      </div>
+    </div>
+
+    <div class="registered-subjects">
+      <h3>Registered Subjects</h3>
+      <div class="subject-list">
+        <div *ngFor="let s of appliedSubjects" class="subject-item">
+          <div class="subject-info">
+            <strong class="subject-name">{{s.name}}</strong>
+            <span class="subject-credits">{{s.credits}} credits</span>
+            <span class="status-badge" [class]="getStatusClass(s.status)">
+              {{s.status || 'pending'}}
+            </span>
+          </div>
+          <button class="remove-btn" (click)="removeApplied(s.id)"
+            [disabled]="s.status === 'approved'">
+            Remove
+          </button>
+        </div>
+        <div *ngIf="appliedSubjects.length === 0" class="empty-message">
+          No subjects registered yet.
+        </div>
+      </div>
+
+      <div class="credit-summary">
+        <div class="credit-total">
+          Total Credits: {{ getSemesterCreditTotal() }} / 36
+        </div>
+        <div class="credit-alert"
+          [class.warn]="getSemesterCreditTotal() < 36"
+          [class.ok]="getSemesterCreditTotal() === 36"
+          [class.error]="getSemesterCreditTotal() > 36">
+          {{ getSemesterCreditTotal() < 36 ? 'Credit load is below maximum' :
+             getSemesterCreditTotal() === 36 ? 'Credit load is optimal' :
+             'Credit load exceeds maximum' }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <button class="back-btn" (click)="showProfile()">Back to Profile</button>
+  </div>
+</div>

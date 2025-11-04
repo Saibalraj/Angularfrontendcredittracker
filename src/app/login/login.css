@@ -1,46 +1,32 @@
 /* Login Container */
 .login-container {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.login-card {
-  background: white;
-  padding: 40px;
-  border-radius: 16px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-  width: 100%;
   max-width: 450px;
-  position: relative;
+  margin: 80px auto;
+  padding: 3rem 2.5rem;
+  background: linear-gradient(145deg, #ffffff, #f8f9fa);
+  border-radius: 20px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
   text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
 }
 
-.header {
-  text-align: center;
-  margin-bottom: 30px;
+.login-container img {
+  width: 90px;
+  height: 90px;
+  margin-bottom: 1.5rem;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
 }
 
-.logo {
-  font-size: 3rem;
-  margin-bottom: 15px;
-}
-
-.header h1 {
+.login-container h2 {
   color: #2c3e50;
-  margin: 0 0 10px 0;
-  font-size: 1.8rem;
+  margin-bottom: 2.5rem;
+  font-size: 2.2rem;
   font-weight: 700;
-}
-
-.subtitle {
-  color: #6c757d;
-  margin: 0;
-  font-size: 0.95rem;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* Form Groups */
@@ -224,26 +210,16 @@ input.error {
   transform: translateY(-1px);
 }
 
-/* Message Styles */
-.message {
-  padding: 12px 16px;
-  margin: 15px 0;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 14px;
-  animation: fadeIn 0.4s ease;
-}
-
-.message.success {
-  background: #d4edda;
+/* Success Message Styles */
+.success-message {
+  background: linear-gradient(135deg, #d4edda, #c3e6cb);
   color: #155724;
   border: 1px solid #c3e6cb;
-}
-
-.message.error {
-  background: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 2rem;
+  animation: slideIn 0.4s ease;
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.15);
 }
 
 .message-content {
@@ -307,10 +283,10 @@ input.error {
   100% { transform: rotate(360deg); }
 }
 
-@keyframes fadeIn {
+@keyframes slideIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(-15px);
   }
   to {
     opacity: 1;
@@ -384,104 +360,14 @@ input.error {
   }
 }
 
-/* Database Information */
-.database-info {
-  margin-top: 30px;
-  padding: 20px;
-  background: linear-gradient(135deg, #f8f9ff, #e9ecef);
-  border-radius: 12px;
-  border: 1px solid #e9ecef;
-  animation: fadeIn 0.5s ease;
-}
-
-.info-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 15px;
-}
-
-.info-icon {
-  font-size: 1.5rem;
-}
-
-.info-header h3 {
+/* Background Styling */
+body {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
   margin: 0;
-  color: #2c3e50;
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.info-content {
-  color: #495057;
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-.info-content p {
-  margin: 8px 0;
-}
-
-.info-content ul {
-  margin: 8px 0;
-  padding-left: 20px;
-}
-
-.info-content li {
-  margin: 4px 0;
-  font-family: 'Courier New', monospace;
-  font-size: 13px;
-}
-
-.schema-info {
-  background: #f8f9fa;
-  border: 1px solid #dee2e6;
-  border-radius: 6px;
-  padding: 12px;
-  margin: 10px 0;
-  font-family: 'Courier New', monospace;
-  font-size: 12px;
-  line-height: 1.4;
-  overflow-x: auto;
-}
-
-.schema-info code {
-  color: #495057;
-  background: none;
-  padding: 0;
-  font-size: inherit;
-}
-
-.note {
-  background: #fff3cd;
-  border: 1px solid #ffeaa7;
-  border-radius: 6px;
-  padding: 10px;
-  margin-top: 15px;
-  color: #856404;
-  font-weight: 500;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   display: flex;
   align-items: center;
-  gap: 8px;
-}
-
-/* Responsive Design for Database Info */
-@media (max-width: 480px) {
-  .database-info {
-    padding: 15px;
-    margin-top: 20px;
-  }
-
-  .info-header h3 {
-    font-size: 1rem;
-  }
-
-  .schema-info {
-    font-size: 11px;
-    padding: 10px;
-  }
-
-  .info-content {
-    font-size: 13px;
-  }
+  justify-content: center;
 }

@@ -1,0 +1,29 @@
+<div class="admin-register">
+  <div class="card">
+    <h2>Admin Sign Up</h2>
+    <div>
+      <label>Username
+        <input [(ngModel)]="username" name="adminUsername" #adminUsername="ngModel" pattern="^[A-Za-z]+$" required />
+      </label>
+      <div *ngIf="adminUsername.invalid && (adminUsername.dirty || adminUsername.touched)" class="error-msg">
+        <span *ngIf="adminUsername.errors?.['required']">Username is required</span>
+        <span *ngIf="adminUsername.errors?.['pattern']">Username must contain letters only</span>
+      </div>
+    </div>
+    <div>
+      <label>Password
+        <div class="password-container">
+          <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password" name="adminPassword" #adminPassword="ngModel" required />
+          <app-eye-toggle [pressed]="showPassword" (toggleEvent)="togglePasswordVisibility()"></app-eye-toggle>
+        </div>
+      </label>
+      <div *ngIf="adminPassword.invalid && (adminPassword.dirty || adminPassword.touched)" class="error-msg">
+        Password is required
+      </div>
+    </div>
+    <div class="actions">
+      <button (click)="register()">Register</button>
+    </div>
+    <div *ngIf="message" class="message">{{message}}</div>
+  </div>
+</div>

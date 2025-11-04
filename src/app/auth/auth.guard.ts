@@ -12,12 +12,36 @@ export class AuthGuard implements CanActivate {
     private router: Router
   ) {}
 
-  canActivate(): boolean {
-    if (this.authService.isLoggedIn()) {
-      return true;
-    } else {
+  canActivate(route: any): boolean {
+    const requiresAdmin = route.data?.requiresAdmin;
+    const requiresStudent = route.data?.requiresStudent;
+
+    // Check if user is logged in
+    if (!this.authService.isLoggedIn()) {
       this.router.navigate(['/login']);
       return false;
     }
+
+    // Check if route requires admin access
+    if (requiresAdmin) {
+      const currentAdmin = localStorage.getItem('currentAdmin');
+      if (!currentAdmin) {
+        this.router.navigate(['/admin-login']);
+        return false;
+      }
+      return true;
+    }
+
+    // Check if route requires student access
+    if (requiresStudent) {
+      const currentUser = localStorage.getItem('currentUser');
+      if (!currentUser) {
+        this.router.navigate(['/login']);
+        return false;
+      }
+      return true;
+    }
+
+    return true;
   }
 }
